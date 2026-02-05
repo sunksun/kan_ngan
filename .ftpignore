@@ -1,0 +1,66 @@
+# ไฟล์ .ftpignore สำหรับ FileZilla
+# วิธีใช้: Settings > Filters > Edit filter rules > Import
+# หรือใช้คู่กับ File filters ใน FileZilla
+
+# ไฟล์และโฟลเดอร์ระบบปฏิบัติการ
+.DS_Store
+.git/
+.gitignore
+.ftpignore
+
+# IDE และ Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# ไฟล์ Composer
+vendor/
+composer.phar
+composer.lock
+composer.json
+
+# ไฟล์ temporary
+tmp/
+temp/
+*.tmp
+*.log
+*.cache
+
+# ไฟล์ backup
+*.backup
+*.backup2
+*.bak
+*.old
+temp_section.txt
+
+# ไฟล์ทดสอบและพัฒนา
+test.html
+test_*.html
+test_*.php
+*_test.php
+check_*.php
+mpdf-test.php
+fix_pdf.php
+create_dot_background.php
+
+# ไฟล์เอกสารโปรเจค
+CLAUDE.md
+SCOPE.md
+README.md
+
+# ไฟล์ configuration ที่มีข้อมูลสำคัญ
+connect_db.php
+config.php
+.env
+
+# Font files ที่ไม่จำเป็น
+fonts/
+
+# ไฟล์ PDF ที่ generate ในระหว่างพัฒนา
+*.pdf
+
+# โฟลเดอร์และไฟล์ vendor ขนาดใหญ่ (ถ้าจำเป็นต้องอัปโหลด vendor ให้เลือกเฉพาะที่จำเป็น)
+vendor/tecnickcom/tcpdf/examples/
+vendor/mpdf/mpdf/.github/
+vendor/psr/log/Psr/

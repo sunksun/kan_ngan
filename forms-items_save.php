@@ -8,23 +8,13 @@ $field = $_SESSION['field'];
 // ตรวจสอบการร้องขอแบบ POST
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // ข้อมูลการเชื่อมต่อฐานข้อมูล
-    $servername = "localhost";
-    $username = "root";
-    $password = ""; // ใส่รหัสผ่านของฐานข้อมูล MySQL
-    $dbname = "kan_ngan"; // ใส่ชื่อฐานข้อมูลที่ต้องการใช้
-
-    $conn = new mysqli($servername, $username, $password, $dbname);
-
-    // ตรวจสอบการเชื่อมต่อ
-    if ($conn->connect_error) {
-        die("Connection failed: " . $conn->connect_error);
-    }
+    require_once 'connect_db.php';
 
     // รับค่าจากฟอร์ม
     $kan_nos = $_POST['kan_no'];
     $item_names = $_POST['item_name'];
     $quantities = $_POST['quantity'];
-    $units = $_POST['unit'];
+    $units = $_POST['unit']; // เปลี่ยนกลับเป็น unit
     $price_per_units = $_POST['price_per_unit'];
     $totals = $_POST['total'];
     $reason = $_POST['reason'];

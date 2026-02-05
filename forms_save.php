@@ -6,18 +6,7 @@ $name = $_SESSION['name'];
 $field = $_SESSION['field'];
 
 // ข้อมูลการเชื่อมต่อฐานข้อมูล
-$servername = "localhost";
-$username = "root";
-$password = ""; // ใส่รหัสผ่านของฐานข้อมูล MySQL
-$dbname = "kan_ngan"; // ใส่ชื่อฐานข้อมูลที่ต้องการใช้
-
-// สร้างการเชื่อมต่อ
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// ตรวจสอบการเชื่อมต่อ
-if ($conn->connect_error) {
-    die("การเชื่อมต่อล้มเหลว: " . $conn->connect_error);
-}
+require_once 'connect_db.php';
 
 // รับข้อมูลจากฟอร์ม
 $row_count = $_POST['row_count'];
@@ -27,14 +16,15 @@ $purpose = $_POST['purpose'];
 $purpose_ = $_POST['purpose_'];
 $project_name = $_POST['project_name'];
 $activity = $_POST['activity'];
+$project_type = $_POST['project_type'];
 $budget = $_POST['budget'];
 $project_number = $_POST['project_number'];
 $budget_used = '';
 $reason = '';
 
 // เตรียมคำสั่ง SQL สำหรับการเพิ่มข้อมูล
-$sql = "INSERT INTO report_request (user_id, kan_no, field, name, purpose, purpose_, project_name, activity, budget, project_number, budget_used, reason) 
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+$sql = "INSERT INTO report_request (user_id, kan_no, field, name, purpose, purpose_, project_name, activity, project_type, budget, project_number, budget_used, reason)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
 // สร้างคำสั่ง prepared statement
 $stmt = $conn->prepare($sql);
@@ -44,7 +34,7 @@ if ($stmt === false) {
 }
 
 // ผูกค่ากับ parameter
-$stmt->bind_param("isssssssssss", $user_id, $row_count, $field, $name, $purpose, $purpose_, $project_name, $activity, $budget, $project_number, $budget_used, $reason);
+$stmt->bind_param("issssssssssss", $user_id, $row_count, $field, $name, $purpose, $purpose_, $project_name, $activity, $project_type, $budget, $project_number, $budget_used, $reason);
 
 // รันคำสั่ง
 if ($stmt->execute()) {

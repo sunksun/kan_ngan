@@ -27,7 +27,7 @@ if (isset($_SESSION['username'])) {
     <meta content="" name="keywords">
 
     <!-- Favicons -->
-    <link href="assets/img/favicon.png" rel="icon">
+    <link href="assets/img/favicon.svg" rel="icon" type="image/svg+xml">
     <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
     <!-- Google Fonts -->
@@ -42,6 +42,9 @@ if (isset($_SESSION['username'])) {
     <link href="assets/vendor/quill/quill.bubble.css" rel="stylesheet">
     <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
     <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 
     <!-- Template Main CSS File -->
     <link href="assets/css/style.css" rel="stylesheet">
@@ -62,7 +65,7 @@ if (isset($_SESSION['username'])) {
 
         <div class="d-flex align-items-center justify-content-between">
             <a href="index.html" class="logo d-flex align-items-center">
-                <img src="assets/img/logo.png" alt="">
+                <i class="bi bi-cash-coin" style="font-size: 2rem; color: #012970; margin-right: 0.5rem;"></i>
                 <span class="d-none d-lg-block">กันเงิน กัน</span>
             </a>
             <i class="bi bi-list toggle-sidebar-btn"></i>
@@ -100,245 +103,7 @@ if (isset($_SESSION['username'])) {
 
     </header><!-- End Header -->
 
-    <!-- ======= Sidebar ======= -->
-    <aside id="sidebar" class="sidebar">
-
-        <ul class="sidebar-nav" id="sidebar-nav">
-
-            <li class="nav-item">
-                <a class="nav-link " href="dashboard.php">
-                    <i class="bi bi-grid"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li><!-- End Dashboard Nav -->
-            <!-- 
-            <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-menu-button-wide"></i><span>Components</span><i class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                    <li>
-                        <a href="components-alerts.html">
-                            <i class="bi bi-circle"></i><span>Alerts</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-accordion.html">
-                            <i class="bi bi-circle"></i><span>Accordion</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-badges.html">
-                            <i class="bi bi-circle"></i><span>Badges</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-breadcrumbs.html">
-                            <i class="bi bi-circle"></i><span>Breadcrumbs</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-buttons.html">
-                            <i class="bi bi-circle"></i><span>Buttons</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-cards.html">
-                            <i class="bi bi-circle"></i><span>Cards</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-carousel.html">
-                            <i class="bi bi-circle"></i><span>Carousel</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-list-group.html">
-                            <i class="bi bi-circle"></i><span>List group</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-modal.html">
-                            <i class="bi bi-circle"></i><span>Modal</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-tabs.html">
-                            <i class="bi bi-circle"></i><span>Tabs</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-pagination.html">
-                            <i class="bi bi-circle"></i><span>Pagination</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-progress.html">
-                            <i class="bi bi-circle"></i><span>Progress</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-spinners.html">
-                            <i class="bi bi-circle"></i><span>Spinners</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-tooltips.html">
-                            <i class="bi bi-circle"></i><span>Tooltips</span>
-                        </a>
-                    </li>
-                </ul>
-            </li> -->
-            <!-- End Components Nav -->
-            <!-- 
-            <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-journal-text"></i><span>Forms</span><i class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                    <li>
-                        <a href="forms-elements.html">
-                            <i class="bi bi-circle"></i><span>Form Elements</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="forms-layouts.html">
-                            <i class="bi bi-circle"></i><span>Form Layouts</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="forms-editors.html">
-                            <i class="bi bi-circle"></i><span>Form Editors</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="forms-validation.html">
-                            <i class="bi bi-circle"></i><span>Form Validation</span>
-                        </a>
-                    </li>
-                </ul>
-            </li> -->
-            <!-- End Forms Nav -->
-            <!-- 
-            <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-layout-text-window-reverse"></i><span>Tables</span><i class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                    <li>
-                        <a href="tables-general.html">
-                            <i class="bi bi-circle"></i><span>General Tables</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="tables-data.html">
-                            <i class="bi bi-circle"></i><span>Data Tables</span>
-                        </a>
-                    </li>
-                </ul>
-            </li> -->
-            <!-- End Tables Nav -->
-            <!-- 
-            <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-bar-chart"></i><span>Charts</span><i class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <ul id="charts-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                    <li>
-                        <a href="charts-chartjs.html">
-                            <i class="bi bi-circle"></i><span>Chart.js</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="charts-apexcharts.html">
-                            <i class="bi bi-circle"></i><span>ApexCharts</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="charts-echarts.html">
-                            <i class="bi bi-circle"></i><span>ECharts</span>
-                        </a>
-                    </li>
-                </ul>
-            </li> -->
-            <!-- End Charts Nav -->
-            <!-- 
-            <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-gem"></i><span>Icons</span><i class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                    <li>
-                        <a href="icons-bootstrap.html">
-                            <i class="bi bi-circle"></i><span>Bootstrap Icons</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="icons-remix.html">
-                            <i class="bi bi-circle"></i><span>Remix Icons</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="icons-boxicons.html">
-                            <i class="bi bi-circle"></i><span>Boxicons</span>
-                        </a>
-                    </li>
-                </ul>
-            </li> -->
-            <!-- End Icons Nav -->
-            <!-- 
-            <li class="nav-heading">Pages</li>
-            -->
-            <!-- 
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="pages-faq.html">
-                    <i class="bi bi-question-circle"></i>
-                    <span>F.A.Q</span>
-                </a>
-            </li> -->
-            <!-- End F.A.Q Page Nav -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="kan_lists.php">
-                    <i class="bi bi-card-list"></i>
-                    <span>รายการกันเงิน กัน</span>
-                </a>
-            </li><!-- End Register Page Nav -->
-
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="forms.php">
-                    <i class="bi bi-journal-text"></i>
-                    <span>ฟอร์มกันเงิน กัน</span>
-                </a>
-            </li>
-            <!-- End Contact Page Nav -->
-
-
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="sign_out.php">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span>Sign Out</span>
-                </a>
-            </li><!-- End Login Page Nav -->
-            <!-- 
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="pages-error-404.html">
-                    <i class="bi bi-dash-circle"></i>
-                    <span>Error 404</span>
-                </a>
-            </li> -->
-            <!-- End Error 404 Page Nav -->
-            <!-- 
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="pages-blank.html">
-                    <i class="bi bi-file-earmark"></i>
-                    <span>Blank</span>
-                </a>
-            </li> -->
-            <!-- End Blank Page Nav -->
-
-        </ul>
-
-    </aside><!-- End Sidebar-->
+    <?php include 'includes/sidebar.php'; ?>
 
     <main id="main" class="main">
 
@@ -361,7 +126,6 @@ if (isset($_SESSION['username'])) {
                                                 <th scope="col">ลำดับ</th>
                                                 <th scope="col">หมายเลขโครงการ</th>
                                                 <th scope="col">ชื่อโครงการ</th>
-                                                <th scope="col">ขอซื้อ/ขอจ้าง</th>
                                                 <th scope="col">วงเงินที่จะจัดซื้อ/จ้าง</th>
                                                 <th scope="col">ส่งออก PDF/แก้ไข/ลบ</th>
                                             </tr>
@@ -369,21 +133,13 @@ if (isset($_SESSION['username'])) {
                                         <tbody>
                                             <?php
                                             // ข้อมูลการเชื่อมต่อฐานข้อมูล
-                                            $servername = "localhost";
-                                            $username = "root";
-                                            $password = ""; // ใส่รหัสผ่านของฐานข้อมูล MySQL
-                                            $dbname = "kan_ngan"; // ใส่ชื่อฐานข้อมูลที่ต้องการใช้
+                                            require_once 'connect_db.php';
 
-                                            // สร้างการเชื่อมต่อ
-                                            $conn = new mysqli($servername, $username, $password, $dbname);
-
-                                            // ตรวจสอบการเชื่อมต่อ
-                                            if ($conn->connect_error) {
-                                                die("การเชื่อมต่อล้มเหลว: " . $conn->connect_error);
-                                            }
-
-                                            $sql = "SELECT * FROM report_request WHERE user_id = '$user_id' ORDER BY `report_request`.`kan_no` DESC";
-                                            $result = $conn->query($sql);
+                                            $sql = "SELECT * FROM report_request WHERE user_id = ? ORDER BY `report_request`.`kan_no` DESC";
+                                            $stmt = $conn->prepare($sql);
+                                            $stmt->bind_param("i", $user_id);
+                                            $stmt->execute();
+                                            $result = $stmt->get_result();
 
                                             if ($result->num_rows > 0) {
                                                 $counter = 1; // ตัวแปรนับเพื่อเก็บลำดับการ
@@ -399,22 +155,22 @@ if (isset($_SESSION['username'])) {
                                                     }
                                                     echo '<td><a href="kan_details.php?id=' . $row['report_id'] . '">' . $project_name . '</a></td>'; // ลิงก์ไปที่ไฟล์ kan_details.php
 
-                                                    echo '<td>' . $row['purpose'] . '</td>';
-                                                    echo '<td>' . $row['budget_used'] . '</td>';
+                                                    echo '<td>' . number_format((float)$row['budget_used'], 2) . '</td>';
                                                     echo '<td>
-                                                    <a class="btn btn-success btn-sm" data-toggle="collapse" href="generate_pdf.php" role="button">PDF</a>
-                                                    <a class="btn btn-primary btn-sm" data-toggle="collapse" href="forms_edit.php?id=' . $row['report_id'] . '" role="button">แก้ไข</a>
-                                                    <a class="btn btn-danger btn-sm" data-toggle="collapse" href="#multiCollapseExample1" role="button">ลบ</a>
+                                                    <a class="btn btn-success btn-sm" href="generate_pdf_new.php?id=' . $row['report_id'] . '" target="_blank"><i class="bi bi-file-pdf"></i> PDF</a>
+                                                    <a class="btn btn-primary btn-sm" href="forms_edit.php?id=' . $row['report_id'] . '"><i class="bi bi-pencil"></i> แก้ไข</a>
+                                                    <button class="btn btn-danger btn-sm" onclick="confirmDelete(' . $row['report_id'] . ')"><i class="bi bi-trash"></i> ลบ</button>
                                                     </td>';
                                                     echo '</tr>';
                                                     $counter++; // เพิ่มตัวแปรนับทุกครั้งที่ผ่านลูป
                                                 }
                                             } else {
                                                 echo '<tr>';
-                                                echo '<td colspan="5">ไม่มีข้อมูล</td>';
+                                                echo '<td colspan="5" class="text-center">ไม่มีข้อมูล</td>';
                                                 echo '</tr>';
                                             }
 
+                                            $stmt->close();
                                             $conn->close();
                                             ?>
                                         </tbody>
@@ -441,7 +197,7 @@ if (isset($_SESSION['username'])) {
             <!-- You can delete the links only if you purchased the pro version. -->
             <!-- Licensing information: https://bootstrapmade.com/license/ -->
             <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
-            Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+            Designed by ลูกปลาน้อย
         </div>
     </footer><!-- End Footer -->
 
@@ -459,6 +215,30 @@ if (isset($_SESSION['username'])) {
 
     <!-- Template Main JS File -->
     <script src="assets/js/main.js"></script>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Delete Confirmation Script -->
+    <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'ยืนยันการลบ?',
+                text: "คุณต้องการลบรายการนี้ใช่หรือไม่? การลบจะไม่สามารถกู้คืนได้",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'ใช่, ลบเลย!',
+                cancelButtonText: 'ยกเลิก'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // ส่งไปยังหน้าลบข้อมูล
+                    window.location.href = 'delete_request.php?id=' + id;
+                }
+            });
+        }
+    </script>
 
 </body>
 

@@ -1,16 +1,6 @@
 <?php
 // การเชื่อมต่อฐานข้อมูล
-$servername = "localhost";
-$username = "root";
-$password = ""; // รหัสผ่านฐานข้อมูล MySQL
-$dbname = "kan_ngan"; // ชื่อฐานข้อมูลที่ต้องการใช้
-
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// ตรวจสอบการเชื่อมต่อ
-if ($conn->connect_error) {
-    die("การเชื่อมต่อล้มเหลว: " . $conn->connect_error);
-}
+require_once 'connect_db.php';
 
 // รับค่าที่ส่งมาจากฟอร์ม
 $report_id = $_GET['report_id'];
@@ -21,13 +11,14 @@ $purpose = $_POST['purpose'];
 $purpose_ = $_POST['purpose_'];
 $project_name = $_POST['project_name'];
 $activity = $_POST['activity'];
+$project_type = $_POST['project_type'];
 $budget = $_POST['budget'];
 $project_number = $_POST['project_number'];
 $budget_used = $_POST['total_budget_used'];
 $reason = $_POST['reason'];
 
 // เตรียมคำสั่ง SQL สำหรับอัปเดตข้อมูลในตาราง report_request
-$sqlUpdateReport = "UPDATE report_request SET field='$field', name='$name', purpose='$purpose', purpose_='$purpose_', project_name='$project_name', activity='$activity', budget='$budget', project_number='$project_number', budget_used='$budget_used', reason='$reason' WHERE report_id='$report_id'";
+$sqlUpdateReport = "UPDATE report_request SET field='$field', name='$name', purpose='$purpose', purpose_='$purpose_', project_name='$project_name', activity='$activity', project_type='$project_type', budget='$budget', project_number='$project_number', budget_used='$budget_used', reason='$reason' WHERE report_id='$report_id'";
 if ($conn->query($sqlUpdateReport) === TRUE) {
     echo '<script>';
     echo 'alert("บันทึกข้อมูลเรียบร้อยแล้ว");';

@@ -10,7 +10,7 @@
     <meta content="" name="keywords">
 
     <!-- Favicons -->
-    <link href="assets/img/favicon.png" rel="icon">
+    <link href="assets/img/favicon.svg" rel="icon" type="image/svg+xml">
     <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
     <!-- Google Fonts -->
@@ -25,6 +25,9 @@
     <link href="assets/vendor/quill/quill.bubble.css" rel="stylesheet">
     <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
     <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
+
+    <!-- SweetAlert2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
 
     <!-- Template Main CSS File -->
     <link href="assets/css/style.css" rel="stylesheet">
@@ -60,21 +63,36 @@
                                     <form name="register" action="register_save.php" method="POST" class="row g-3 needs-validation" novalidate>
                                         <div class="col-12">
                                             <label for="yourName" class="form-label">ชื่อ-นามสกุล</label>
-                                            <input type="text" name="name" class="form-control" id="yourName" required>
+                                            <input type="text" name="name" class="form-control" id="yourName" placeholder="เช่น นายสังสรรค์ หล้าพันธ์" required>
                                             <div class="invalid-feedback">Please, enter your name!</div>
                                         </div>
 
                                         <div class="col-12">
-                                            <label for="yourEmail" class="form-label">สาขาวิชา</label>
-                                            <input type="text" name="field" class="form-control" id="yourEmail" required>
-                                            <div class="invalid-feedback">Please enter a valid Email adddress!</div>
+                                            <label for="yourField" class="form-label">สาขาวิชา</label>
+                                            <select name="field" class="form-select" id="yourField" required>
+                                                <option value="">เลือกสาขาวิชา</option>
+                                                <option value="สาขาวิชาเคมีประยุกต์">สาขาวิชาเคมีประยุกต์</option>
+                                                <option value="สาขาวิชาฟิสิกส์">สาขาวิชาฟิสิกส์</option>
+                                                <option value="สาขาวิชาวิทยาศาสตร์ชีวภาพ">สาขาวิชาวิทยาศาสตร์ชีวภาพ</option>
+                                                <option value="สาขาวิชาวิทยาการคอมพิวเตอร์">สาขาวิชาวิทยาการคอมพิวเตอร์</option>
+                                                <option value="สาขาวิชาเทคโนโลยีสารสนเทศ">สาขาวิชาเทคโนโลยีสารสนเทศ</option>
+                                                <option value="สาขาวิชาเกษตรศาสตร์">สาขาวิชาเกษตรศาสตร์</option>
+                                                <option value="สาขาวิชาอาหารและโภชนาการ">สาขาวิชาอาหารและโภชนาการ</option>
+                                                <option value="สาขาวิชาเทคโนโลยีอาหาร">สาขาวิชาเทคโนโลยีอาหาร</option>
+                                                <option value="สาขาวิชาสาธารณสุขศาสตร์">สาขาวิชาสาธารณสุขศาสตร์</option>
+                                                <option value="สาขาวิชาสัตวศาสตร์">สาขาวิชาสัตวศาสตร์</option>
+                                                <option value="สาขาวิชาวิทยาศาสตร์และเทคโนโลยีสิ่งแวดล้อม">สาขาวิชาวิทยาศาสตร์และเทคโนโลยีสิ่งแวดล้อม</option>
+                                                <option value="สาขาวิชาคณิตศาสตร์">สาขาวิชาคณิตศาสตร์</option>
+                                                <option value="สาขาวิชาวิทยาศาสตร์การกีฬาและการออกกำลังกาย">สาขาวิชาวิทยาศาสตร์การกีฬาและการออกกำลังกาย</option>
+                                            </select>
+                                            <div class="invalid-feedback">กรุณาเลือกสาขาวิชา</div>
                                         </div>
 
                                         <div class="col-12">
                                             <label for="yourUsername" class="form-label">รหัสผู้ใช้งาน</label>
                                             <div class="input-group has-validation">
                                                 <input type="text" name="username" class="form-control" id="yourUsername" required>
-                                                <div class="invalid-feedback">Please choose a username.</div>
+                                                <div class="invalid-feedback">กรุณากรอกรหัสผู้ใช้งาน</div>
                                             </div>
                                         </div>
 
@@ -100,7 +118,7 @@
                                 <!-- You can delete the links only if you purchased the pro version. -->
                                 <!-- Licensing information: https://bootstrapmade.com/license/ -->
                                 <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
-                                Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+                                Designed by ลูกปลาน้อย
                             </div>
 
                         </div>
@@ -126,6 +144,9 @@
 
     <!-- Template Main JS File -->
     <script src="assets/js/main.js"></script>
+
+    <!-- SweetAlert2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 </body>
 

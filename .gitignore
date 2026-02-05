@@ -1,0 +1,74 @@
+# ไฟล์และโฟลเดอร์ระบบปฏิบัติการ
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# IDE และ Editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+*.swo
+*~
+
+# ไฟล์ Composer (dependencies)
+/vendor/
+composer.phar
+composer.lock
+
+# ไฟล์ temporary และ cache
+/tmp/
+/temp/
+*.tmp
+*.cache
+*.log
+
+# ไฟล์ backup
+*.backup
+*.backup2
+*.bak
+*.old
+temp_section.txt
+
+# ไฟล์ PDF ที่ generate
+*.pdf
+!assets/img/*.pdf
+
+# ไฟล์ทดสอบ
+test.html
+test_*.html
+test_*.php
+*_test.php
+check_*.php
+mpdf-test.php
+fix_pdf.php
+create_dot_background.php
+
+# ไฟล์ configuration ที่มีข้อมูลสำคัญ
+connect_db.php
+config.php
+.env
+.env.local
+
+# ไฟล์เอกสาร Claude
+CLAUDE.md
+SCOPE.md
+
+# Font files ที่ไม่จำเป็น
+/fonts/
+
+# ไฟล์ vendor ขนาดใหญ่ที่ไม่จำเป็น
+vendor/tecnickcom/tcpdf/examples/
+vendor/mpdf/mpdf/.github/
+vendor/psr/log/Psr/
+
+# ไฟล์ PHP เก่าที่ไม่ใช้แล้ว
+generate_pdf_new.php.backup
+generate_pdf_new.php.backup2
+composer_old_php.php

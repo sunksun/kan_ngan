@@ -27,7 +27,7 @@ if (isset($_SESSION['username'])) {
     <meta content="" name="keywords">
 
     <!-- Favicons -->
-    <link href="assets/img/favicon.png" rel="icon">
+    <link href="assets/img/favicon.svg" rel="icon" type="image/svg+xml">
     <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
 
     <!-- Google Fonts -->
@@ -43,8 +43,25 @@ if (isset($_SESSION['username'])) {
     <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
     <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
 
+    <!-- jQuery UI for Autocomplete -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
     <!-- Template Main CSS File -->
     <link href="assets/css/style.css" rel="stylesheet">
+
+    <style>
+        .ui-autocomplete {
+            max-height: 300px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            z-index: 9999 !important;
+        }
+
+        .ui-menu-item {
+            font-size: 14px;
+            padding: 5px;
+        }
+    </style>
 
     <!-- =======================================================
   * Template Name: NiceAdmin
@@ -62,7 +79,7 @@ if (isset($_SESSION['username'])) {
 
         <div class="d-flex align-items-center justify-content-between">
             <a href="index.html" class="logo d-flex align-items-center">
-                <img src="assets/img/logo.png" alt="">
+                <i class="bi bi-cash-coin" style="font-size: 2rem; color: #012970; margin-right: 0.5rem;"></i>
                 <span class="d-none d-lg-block">กันเงิน กัน</span>
             </a>
             <i class="bi bi-list toggle-sidebar-btn"></i>
@@ -100,249 +117,23 @@ if (isset($_SESSION['username'])) {
 
     </header><!-- End Header -->
 
-    <!-- ======= Sidebar ======= -->
-    <aside id="sidebar" class="sidebar">
-
-        <ul class="sidebar-nav" id="sidebar-nav">
-
-            <li class="nav-item">
-                <a class="nav-link " href="dashboard.php">
-                    <i class="bi bi-grid"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li><!-- End Dashboard Nav -->
-            <!-- 
-            <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-menu-button-wide"></i><span>Components</span><i class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <ul id="components-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                    <li>
-                        <a href="components-alerts.html">
-                            <i class="bi bi-circle"></i><span>Alerts</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-accordion.html">
-                            <i class="bi bi-circle"></i><span>Accordion</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-badges.html">
-                            <i class="bi bi-circle"></i><span>Badges</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-breadcrumbs.html">
-                            <i class="bi bi-circle"></i><span>Breadcrumbs</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-buttons.html">
-                            <i class="bi bi-circle"></i><span>Buttons</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-cards.html">
-                            <i class="bi bi-circle"></i><span>Cards</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-carousel.html">
-                            <i class="bi bi-circle"></i><span>Carousel</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-list-group.html">
-                            <i class="bi bi-circle"></i><span>List group</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-modal.html">
-                            <i class="bi bi-circle"></i><span>Modal</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-tabs.html">
-                            <i class="bi bi-circle"></i><span>Tabs</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-pagination.html">
-                            <i class="bi bi-circle"></i><span>Pagination</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-progress.html">
-                            <i class="bi bi-circle"></i><span>Progress</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-spinners.html">
-                            <i class="bi bi-circle"></i><span>Spinners</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="components-tooltips.html">
-                            <i class="bi bi-circle"></i><span>Tooltips</span>
-                        </a>
-                    </li>
-                </ul>
-            </li> -->
-            <!-- End Components Nav -->
-            <!-- 
-            <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#forms-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-journal-text"></i><span>Forms</span><i class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <ul id="forms-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                    <li>
-                        <a href="forms-elements.html">
-                            <i class="bi bi-circle"></i><span>Form Elements</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="forms-layouts.html">
-                            <i class="bi bi-circle"></i><span>Form Layouts</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="forms-editors.html">
-                            <i class="bi bi-circle"></i><span>Form Editors</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="forms-validation.html">
-                            <i class="bi bi-circle"></i><span>Form Validation</span>
-                        </a>
-                    </li>
-                </ul>
-            </li> -->
-            <!-- End Forms Nav -->
-            <!-- 
-            <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#tables-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-layout-text-window-reverse"></i><span>Tables</span><i class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <ul id="tables-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                    <li>
-                        <a href="tables-general.html">
-                            <i class="bi bi-circle"></i><span>General Tables</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="tables-data.html">
-                            <i class="bi bi-circle"></i><span>Data Tables</span>
-                        </a>
-                    </li>
-                </ul>
-            </li> -->
-            <!-- End Tables Nav -->
-            <!-- 
-            <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#charts-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-bar-chart"></i><span>Charts</span><i class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <ul id="charts-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                    <li>
-                        <a href="charts-chartjs.html">
-                            <i class="bi bi-circle"></i><span>Chart.js</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="charts-apexcharts.html">
-                            <i class="bi bi-circle"></i><span>ApexCharts</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="charts-echarts.html">
-                            <i class="bi bi-circle"></i><span>ECharts</span>
-                        </a>
-                    </li>
-                </ul>
-            </li> -->
-            <!-- End Charts Nav -->
-            <!-- 
-            <li class="nav-item">
-                <a class="nav-link collapsed" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
-                    <i class="bi bi-gem"></i><span>Icons</span><i class="bi bi-chevron-down ms-auto"></i>
-                </a>
-                <ul id="icons-nav" class="nav-content collapse " data-bs-parent="#sidebar-nav">
-                    <li>
-                        <a href="icons-bootstrap.html">
-                            <i class="bi bi-circle"></i><span>Bootstrap Icons</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="icons-remix.html">
-                            <i class="bi bi-circle"></i><span>Remix Icons</span>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="icons-boxicons.html">
-                            <i class="bi bi-circle"></i><span>Boxicons</span>
-                        </a>
-                    </li>
-                </ul>
-            </li> -->
-            <!-- End Icons Nav -->
-            <!-- 
-            <li class="nav-heading">Pages</li>
-            -->
-            <!-- 
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="pages-faq.html">
-                    <i class="bi bi-question-circle"></i>
-                    <span>F.A.Q</span>
-                </a>
-            </li> -->
-            <!-- End F.A.Q Page Nav -->
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="kan_lists.php">
-                    <i class="bi bi-card-list"></i>
-                    <span>รายการกันเงิน กัน</span>
-                </a>
-            </li><!-- End Register Page Nav -->
-
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="forms.php">
-                    <i class="bi bi-journal-text"></i>
-                    <span>ฟอร์มกันเงิน กัน</span>
-                </a>
-            </li>
-            <!-- End Contact Page Nav -->
-
-
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="sign_out.php">
-                    <i class="bi bi-box-arrow-right"></i>
-                    <span>Sign Out</span>
-                </a>
-            </li><!-- End Login Page Nav -->
-            <!-- 
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="pages-error-404.html">
-                    <i class="bi bi-dash-circle"></i>
-                    <span>Error 404</span>
-                </a>
-            </li> -->
-            <!-- End Error 404 Page Nav -->
-            <!-- 
-            <li class="nav-item">
-                <a class="nav-link collapsed" href="pages-blank.html">
-                    <i class="bi bi-file-earmark"></i>
-                    <span>Blank</span>
-                </a>
-            </li> -->
-            <!-- End Blank Page Nav -->
-
-        </ul>
-
-    </aside><!-- End Sidebar-->
+    <?php include 'includes/sidebar.php'; ?>
 
     <main id="main" class="main">
         <?php
         $kan_no = $_GET['kan_no'];
+
+        // เชื่อมต่อฐานข้อมูลเพื่อดึงข้อมูลราคากลาง
+        require_once 'connect_db.php';
+        $sql = "SELECT id, item_name, unit, price FROM middle_price ORDER BY category, item_name";
+        $result = $conn->query($sql);
+        $middle_price_items = [];
+        if ($result && $result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $middle_price_items[] = $row;
+            }
+        }
+        $conn->close();
         ?>
         <section class="section">
             <div class="row">
@@ -358,18 +149,24 @@ if (isset($_SESSION['username'])) {
                                         <table class="table">
                                             <thead>
                                                 <tr>
-                                                    <th scope="col">รายการ</th>
-                                                    <th scope="col">จำนวน</th>
-                                                    <th scope="col">หน่วย</th>
-                                                    <th scope="col">ราคาต่อหน่วย</th>
-                                                    <th scope="col">รวมเงิน</th>
+                                                    <th scope="col" style="width: 25%;">รายการ</th>
+                                                    <th scope="col" style="width: 12%;">ราคา (กลาง)</th>
+                                                    <th scope="col" style="width: 8%;">หน่วย</th>
+                                                    <th scope="col" style="width: 12%;">จำนวน</th>
+                                                    <th scope="col" style="width: 12%;">หน่วย</th>
+                                                    <th scope="col" style="width: 15%;">ราคาต่อหน่วย</th>
+                                                    <th scope="col" style="width: 16%;">รวมเงิน</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
                                                 <tr>
-                                                    <td><input type="text" class="form-control" name="item_name[]" placeholder="รายการ" required></td>
+                                                    <td>
+                                                        <input type="text" class="form-control" name="item_name[]" placeholder="รายการ" required>
+                                                    </td>
+                                                    <td><input type="number" class="form-control middle-price" name="middle_price[]" placeholder="" readonly></td>
+                                                    <td><input type="text" class="form-control middle-unit" name="middle_unit[]" placeholder="" readonly></td>
                                                     <td><input type="number" class="form-control quantity" name="quantity[]" placeholder="จำนวน" required></td>
-                                                    <td><input type="text" class="form-control" name="unit[]" placeholder="หน่วย" required></td>
+                                                    <td><input type="text" class="form-control unit" name="unit[]" placeholder="หน่วย" required></td>
                                                     <td><input type="number" class="form-control price_per_unit" name="price_per_unit[]" placeholder="ราคาต่อหน่วย" required></td>
                                                     <td><input type="number" class="form-control total" name="total[]" placeholder="รวมเงิน" readonly></td>
                                                 </tr>
@@ -386,7 +183,7 @@ if (isset($_SESSION['username'])) {
                                 <button type="button" class="btn btn-success" onclick="addItemRow()">เพิ่มรายการ</button>
                                 <div class="col-12">
                                     <label for="inputAddress5" class="form-label">เหตุผลและความจำเป็นที่จะต้องซื้อหรือจ้าง</label>
-                                    <input type="text" name="reason" class="form-control" id="inputAddres5s" placeholder="">
+                                    <input type="text" name="reason" class="form-control" id="inputAddres5s" placeholder="เขียนเหตุผลและความจำเป็นที่จะต้องซื้อหรือจ้างสั้นๆ ได้ใจความ" required>
                                 </div>
                         </div>
                         <div class="text-center">
@@ -400,61 +197,6 @@ if (isset($_SESSION['username'])) {
                 </div>
             </div>
         </section>
-        <script>
-            function addItemRow() {
-                var container = document.getElementById('item-container');
-                var row = document.createElement('div');
-                row.className = 'item-row';
-                row.innerHTML = `<table class="table">
-                        <tr>
-                            <td><input type="text" class="form-control" name="item_name[]" placeholder="รายการ" required></td>
-                            <td><input type="number" class="form-control quantity" name="quantity[]" placeholder="จำนวน" required></td>
-                            <td><input type="text" class="form-control" name="unit[]" placeholder="หน่วย" required></td>
-                            <td><input type="number" class="form-control price_per_unit" name="price_per_unit[]" placeholder="ราคาต่อหน่วย" required></td>
-                            <td><input type="number" class="form-control total" name="total[]" placeholder="รวมเงิน" readonly></td>
-                        </tr>
-                    </table>`;
-                container.appendChild(row);
-
-                // Add event listeners to new row
-                const quantities = row.querySelectorAll('.quantity');
-                const prices = row.querySelectorAll('.price_per_unit');
-                quantities.forEach(input => input.addEventListener('input', handleInput));
-                prices.forEach(input => input.addEventListener('input', handleInput));
-            }
-
-            document.addEventListener('input', function(event) {
-                if (event.target.classList.contains('quantity') || event.target.classList.contains('price_per_unit')) {
-                    handleInput(event);
-                }
-            });
-
-            function handleInput(event) {
-                calculateTotal(event);
-                calculateGrandTotal();
-            }
-
-            function calculateTotal(event) {
-                const row = event.target.closest('tr');
-                const quantity = row.querySelector('.quantity').value;
-                const pricePerUnit = row.querySelector('.price_per_unit').value;
-                const totalField = row.querySelector('.total');
-
-                const total = quantity * pricePerUnit;
-                totalField.value = total.toFixed(2); // แสดงผลลัพธ์เป็นทศนิยม 2 ตำแหน่ง
-            }
-
-            function calculateGrandTotal() {
-                const totals = document.querySelectorAll('.total');
-                let grandTotal = 0;
-
-                totals.forEach(total => {
-                    grandTotal += parseFloat(total.value) || 0;
-                });
-
-                document.getElementById('inputAddres5s').value = grandTotal.toFixed(2); // แสดงผลลัพธ์เป็นทศนิยม 2 ตำแหน่ง
-            }
-        </script>
     </main><!-- End #main -->
 
 
@@ -468,11 +210,15 @@ if (isset($_SESSION['username'])) {
             <!-- You can delete the links only if you purchased the pro version. -->
             <!-- Licensing information: https://bootstrapmade.com/license/ -->
             <!-- Purchase the pro version with working PHP/AJAX contact form: https://bootstrapmade.com/nice-admin-bootstrap-admin-html-template/ -->
-            Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+            Designed by ลูกปลาน้อย
         </div>
     </footer><!-- End Footer -->
 
     <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
+
+    <!-- jQuery and jQuery UI -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
 
     <!-- Vendor JS Files -->
     <script src="assets/vendor/apexcharts/apexcharts.min.js"></script>
@@ -486,6 +232,118 @@ if (isset($_SESSION['username'])) {
 
     <!-- Template Main JS File -->
     <script src="assets/js/main.js"></script>
+
+    <!-- Custom Scripts -->
+    <script>
+        // ฟังก์ชันสำหรับเปิดใช้งาน autocomplete สำหรับ input รายการ
+        function initAutocomplete(inputElement) {
+            $(inputElement).autocomplete({
+                source: function(request, response) {
+                    $.ajax({
+                        // ใช้ Path แบบสัมพันธ์เพื่อให้รองรับทั้ง http และ https
+                        url: 'search_middle_price.php',
+                        dataType: 'json',
+                        data: {
+                            term: request.term
+                        },
+                        success: function(data) {
+                            response(data);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('AJAX Error:', status, error);
+                            response([]);
+                        }
+                    });
+                },
+                minLength: 2,
+                select: function(event, ui) {
+                    const row = $(this).closest('tr');
+                    row.find('.middle-price').val(ui.item.price);
+                    row.find('.middle-unit').val(ui.item.unit);
+                    row.find('.unit').val(ui.item.unit);
+                    row.find('.price_per_unit').val(ui.item.price);
+
+                    const quantity = row.find('.quantity').val();
+                    if (quantity) {
+                        const total = parseFloat(quantity) * parseFloat(ui.item.price);
+                        row.find('.total').val(total.toFixed(2));
+                        calculateGrandTotal();
+                    }
+                    return true;
+                }
+            });
+        }
+
+        // เปิดใช้งาน autocomplete สำหรับ input รายการทุกตัวที่มีอยู่
+        $(document).ready(function() {
+            $('input[name="item_name[]"]').each(function() {
+                initAutocomplete(this);
+            });
+        });
+
+        function addItemRow() {
+            var container = document.getElementById('item-container');
+            var row = document.createElement('div');
+            row.className = 'item-row';
+            row.innerHTML = `<table class="table">
+                    <tr>
+                        <td style="width: 25%;">
+                            <input type="text" class="form-control" name="item_name[]" placeholder="รายการ" required>
+                        </td>
+                        <td style="width: 12%;"><input type="number" class="form-control middle-price" name="middle_price[]" placeholder="" readonly></td>
+                        <td style="width: 8%;"><input type="text" class="form-control middle-unit" name="middle_unit[]" placeholder="" readonly></td>
+                        <td style="width: 12%;"><input type="number" class="form-control quantity" name="quantity[]" placeholder="จำนวน" required></td>
+                        <td style="width: 12%;"><input type="text" class="form-control unit" name="unit[]" placeholder="หน่วย" required></td>
+                        <td style="width: 15%;"><input type="number" class="form-control price_per_unit" name="price_per_unit[]" placeholder="ราคาต่อหน่วย" required></td>
+                        <td style="width: 16%;"><input type="number" class="form-control total" name="total[]" placeholder="รวมเงิน" readonly></td>
+                    </tr>
+                </table>`;
+            container.appendChild(row);
+
+            // Add event listeners to new row
+            const quantities = row.querySelectorAll('.quantity');
+            const prices = row.querySelectorAll('.price_per_unit');
+
+            quantities.forEach(input => input.addEventListener('input', handleInput));
+            prices.forEach(input => input.addEventListener('input', handleInput));
+
+            // เปิดใช้งาน autocomplete สำหรับ input รายการใหม่
+            const itemInput = row.querySelector('input[name="item_name[]"]');
+            initAutocomplete(itemInput);
+        }
+
+        function handleInput(event) {
+            calculateTotal(event);
+            calculateGrandTotal();
+        }
+
+        function calculateTotal(event) {
+            const row = event.target.closest('tr');
+            const quantity = parseFloat(row.querySelector('.quantity').value) || 0;
+            const pricePerUnit = parseFloat(row.querySelector('.price_per_unit').value) || 0;
+            const totalField = row.querySelector('.total');
+
+            const total = quantity * pricePerUnit;
+            totalField.value = total.toFixed(2); // แสดงผลลัพธ์เป็นทศนิยม 2 ตำแหน่ง
+        }
+
+        function calculateGrandTotal() {
+            const totals = document.querySelectorAll('.total');
+            let grandTotal = 0;
+
+            totals.forEach(total => {
+                grandTotal += parseFloat(total.value) || 0;
+            });
+
+            document.querySelector('input[name="budget_used"]').value = grandTotal.toFixed(2); // แสดงผลลัพธ์เป็นทศนิยม 2 ตำแหน่ง
+        }
+
+        document.addEventListener('input', function(event) {
+            if (event.target.classList.contains('quantity') || event.target.classList.contains('price_per_unit')) {
+                handleInput(event);
+            }
+        });
+    </script>
 
 </body>
 

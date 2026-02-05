@@ -1,6 +1,16 @@
 {
     "require": {
+        "php": ">=7.4 <8.0",
         "tecnickcom/tcpdf": "^6.7",
-        "mpdf/mpdf": "^8.2"
+        "mpdf/mpdf": "^8.2",
+        "phpoffice/phpspreadsheet": "^1.29",
+        "psr/log": "^1.1",
+        "ext-gd": "*",
+        "ext-mbstring": "*"
+    },
+    "config": {
+        "platform": {
+            "php": "7.4.33"
+        }
     }
 }

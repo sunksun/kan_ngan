@@ -1,17 +1,6 @@
 <?php
 // ข้อมูลการเชื่อมต่อฐานข้อมูล
-$servername = "localhost";
-$username = "root";
-$password = ""; // ใส่รหัสผ่านของฐานข้อมูล MySQL
-$dbname = "kan_ngan";
-
-// สร้างการเชื่อมต่อ
-$conn = new mysqli($servername, $username, $password, $dbname);
-
-// ตรวจสอบการเชื่อมต่อ
-if ($conn->connect_error) {
-    die("การเชื่อมต่อล้มเหลว: " . $conn->connect_error);
-}
+require_once 'connect_db.php';
 
 // รับข้อมูลจากฟอร์ม
 $username = $_POST['username'];
