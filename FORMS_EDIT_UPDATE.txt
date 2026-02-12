@@ -1,0 +1,155 @@
+====================================================================
+การอัปเดต forms_edit.php ให้รองรับ middle_price และ middle_unit
+วันที่: 12 กุมภาพันธ์ 2569
+====================================================================
+
+## สรุปการแก้ไข
+
+อัปเดตหน้า forms_edit.php ให้ทำงานตรงกับ forms-items.php โดยเพิ่ม:
+1. คอลัมน์ ราคา (กลาง) และ หน่วย ในตารางแก้ไขรายการ
+2. ฟังก์ชัน Autocomplete สำหรับค้นหาราคากลาง
+3. การบันทึกข้อมูล middle_price และ middle_unit
+
+====================================================================
+
+## ไฟล์ที่แก้ไข (2 ไฟล์)
+
+### 1. forms_edit.php
+- เพิ่ม jQuery UI CSS และ Custom Autocomplete CSS (lines 46-62)
+- อัปเดตตารางจาก 5 คอลัมน์ เป็น 7 คอลัมน์ (lines 228-236)
+  - เพิ่ม: ราคา (กลาง) และ หน่วย หลังคอลัมน์ รายการ
+- อัปเดตการแสดงข้อมูลในตาราง (lines 238-255)
+  - เพิ่ม input สำหรับ middle_price[] (readonly)
+  - เพิ่ม input สำหรับ middle_unit[] (readonly)
+  - เปลี่ยน colspan จาก 5 เป็น 7 เมื่อไม่พบข้อมูล
+- เพิ่ม jQuery และ jQuery UI scripts (ก่อน </body>)
+- เพิ่ม Autocomplete JavaScript สำหรับค้นหาราคากลาง
+
+### 2. forms_edit_save.php
+- เพิ่มการรับค่า middle_price[] และ middle_unit[] จาก POST (lines 43-44)
+- อัปเดต SQL INSERT จาก 6 ฟิลด์ เป็น 8 ฟิลด์ (line 51)
+- เปลี่ยนจาก query ธรรมดา เป็น prepared statement (เพิ่มความปลอดภัย)
+- อัปเดต bind_param เป็น "ssdsisdd" สำหรับ 8 พารามิเตอร์ (line 63)
+
+====================================================================
+
+## โครงสร้างตารางใหม่ (7 คอลัมน์)
+
+| รายการ | ราคา (กลาง) | หน่วย | จำนวน | หน่วย | ราคาต่อหน่วย | รวมเงิน |
+|--------|-------------|-------|--------|-------|--------------|---------|
+| [input]| [readonly]  |[readonly]| [input]| [input]| [input]    | [readonly]|
+
+====================================================================
+
+## ฟังก์ชัน Autocomplete
+
+เมื่อผู้ใช้พิมพ์ในช่อง "รายการ" (ขั้นต่ำ 2 ตัวอักษร):
+1. ระบบค้นหาในตาราง middle_price ผ่าน search_middle_price.php
+2. แสดงรายการที่ตรงกันสูงสุด 10 รายการ
+3. เมื่อเลือกรายการ:
+   - ช่อง "รายการ" จะเติมชื่อสินค้า
+   - ช่อง "ราคา (กลาง)" จะเติมราคาอัตโนมัติ
+   - ช่อง "หน่วย" จะเติมหน่วยอัตโนมัติ
+
+====================================================================
+
+## วิธีทดสอบการทำงาน
+
+1. เข้าสู่หน้า forms_edit.php?id=2 (หรือ id อื่นๆ ที่มีอยู่)
+2. คลิกที่ช่อง "รายการ" และพิมพ์อย่างน้อย 2 ตัวอักษร
+3. ดูรายการที่แนะนำจาก autocomplete
+4. เลือกรายการที่ต้องการ
+5. ตรวจสอบว่า ราคา (กลาง) และ หน่วย ถูกเติมอัตโนมัติ
+6. แก้ไขข้อมูลอื่นๆ ตามต้องการ
+7. กด "บันทึกข้อมูล"
+8. ตรวจสอบในฐานข้อมูล:
+   SELECT * FROM items WHERE kan_no = 'KAN_NGAN0002';
+
+====================================================================
+
+## ไฟล์ที่ต้องอัปโหลดขึ้น Server
+
+1. forms_edit.php (แก้ไขแล้ว)
+2. forms_edit_save.php (แก้ไขแล้ว)
+
+หมายเหตุ: ไฟล์ search_middle_price.php ถูกอัปโหลดไปแล้วในครั้งก่อน
+
+====================================================================
+
+## การตรวจสอบ Syntax
+
+✅ forms_edit.php - No syntax errors detected
+✅ forms_edit_save.php - No syntax errors detected
+
+====================================================================
+
+## คำแนะนำก่อนอัปโหลด
+
+1. ตรวจสอบว่า database บน server มีคอลัมน์ middle_price และ middle_unit แล้ว
+   - ใช้ SQL script: update_items_table.sql (ถ้ายังไม่ได้รัน)
+
+2. Backup ไฟล์เดิมบน server ก่อนอัปโหลด:
+   - forms_edit.php → forms_edit.php.backup
+   - forms_edit_save.php → forms_edit_save.php.backup
+
+3. อัปโหลดไฟล์ทั้ง 2 ไฟล์ผ่าน FileZilla
+
+4. ตรวจสอบ File Permissions:
+   - forms_edit.php: 644
+   - forms_edit_save.php: 644
+
+====================================================================
+
+## URL สำหรับทดสอบบน Server
+
+1. แก้ไขฟอร์ม:
+   https://sunksundev.com/kan_ngan/forms_edit.php?id=2
+
+2. หลังบันทึกจะ redirect ไปที่:
+   https://sunksundev.com/kan_ngan/dashboard.php
+
+====================================================================
+
+## Troubleshooting
+
+### ปัญหา: Autocomplete ไม่ทำงาน
+- ตรวจสอบว่า jQuery และ jQuery UI โหลดสำเร็จ (เปิด Browser Console)
+- ตรวจสอบว่า search_middle_price.php มีอยู่และ permissions = 644
+- ตรวจสอบว่า database มีตาราง middle_price และมีข้อมูล
+
+### ปัญหา: บันทึกข้อมูลไม่ได้
+- ตรวจสอบว่า items table มีคอลัมน์ middle_price และ middle_unit
+- เปิด PHP error log: /Applications/XAMPP/xamppfiles/logs/php_error_log
+- ตรวจสอบ Browser Console สำหรับ JavaScript errors
+
+### ปัญหา: Fatal error: Call to a member function bind_param() on bool
+- แสดงว่า SQL prepare statement ล้มเหลว
+- สาเหตุ: database ไม่มีคอลัมน์ middle_price และ middle_unit
+- แก้ไข: รัน SQL script update_items_table.sql ก่อน
+
+====================================================================
+
+## ความแตกต่างระหว่าง forms-items.php และ forms_edit.php
+
+### forms-items.php (สำหรับเพิ่มรายการใหม่)
+- สร้างรายการใหม่ทั้งหมด
+- มีปุ่ม "เพิ่มรายการ" เพื่อเพิ่มแถวใหม่
+- บันทึกไปที่: forms-items_save.php
+
+### forms_edit.php (สำหรับแก้ไขรายการที่มีอยู่)
+- แสดงรายการที่มีอยู่แล้ว
+- แก้ไขได้ทุกฟิลด์
+- ลบรายการเก่าทั้งหมด และเพิ่มรายการใหม่ (DELETE + INSERT)
+- บันทึกไปที่: forms_edit_save.php
+
+====================================================================
+
+## การทำงานของ forms_edit_save.php (ใหม่)
+
+1. อัปเดตข้อมูลหลักใน report_request table
+2. ลบรายการเก่าทั้งหมดใน items table (WHERE kan_no = '...')
+3. เพิ่มรายการใหม่ทั้งหมดเข้า items table พร้อม middle_price และ middle_unit
+4. ใช้ prepared statement เพื่อป้องกัน SQL injection
+5. Redirect ไปที่ dashboard.php เมื่อสำเร็จ
+
+====================================================================

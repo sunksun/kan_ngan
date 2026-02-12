@@ -43,8 +43,25 @@ if (isset($_SESSION['username'])) {
     <link href="assets/vendor/remixicon/remixicon.css" rel="stylesheet">
     <link href="assets/vendor/simple-datatables/style.css" rel="stylesheet">
 
+    <!-- jQuery UI for Autocomplete -->
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
     <!-- Template Main CSS File -->
     <link href="assets/css/style.css" rel="stylesheet">
+
+    <style>
+        .ui-autocomplete {
+            max-height: 300px;
+            overflow-y: auto;
+            overflow-x: hidden;
+            z-index: 9999 !important;
+        }
+
+        .ui-menu-item {
+            font-size: 14px;
+            padding: 5px;
+        }
+    </style>
 
     <!-- =======================================================
   * Template Name: NiceAdmin
@@ -211,6 +228,8 @@ if (isset($_SESSION['username'])) {
                                         <thead>
                                             <tr>
                                                 <th scope="col">รายการ</th>
+                                                <th scope="col">ราคา (กลาง)</th>
+                                                <th scope="col">หน่วย</th>
                                                 <th scope="col">จำนวน</th>
                                                 <th scope="col">หน่วย</th>
                                                 <th scope="col">ราคาต่อหน่วย</th>
@@ -222,17 +241,21 @@ if (isset($_SESSION['username'])) {
                                             if ($resultItem->num_rows > 0) {
                                                 // แสดงผลข้อมูลของแต่ละแถว
                                                 while ($rowItem = $resultItem->fetch_assoc()) {
+                                                    $middle_price = isset($rowItem["middle_price"]) ? $rowItem["middle_price"] : '';
+                                                    $middle_unit = isset($rowItem["middle_unit"]) ? $rowItem["middle_unit"] : '';
                                                     echo '<tr>';
-                                                    echo '<td><input type="text" class="form-control" name="item_name[]" value="' . $rowItem["item_name"] . '" placeholder="รายการ" required></td>';
+                                                    echo '<td><input type="text" class="form-control item_name_input" name="item_name[]" value="' . htmlspecialchars($rowItem["item_name"]) . '" placeholder="รายการ" required></td>';
+                                                    echo '<td><input type="number" class="form-control" name="middle_price[]" value="' . $middle_price . '" placeholder="ราคา (กลาง)" readonly></td>';
+                                                    echo '<td><input type="text" class="form-control" name="middle_unit[]" value="' . htmlspecialchars($middle_unit) . '" placeholder="หน่วย" readonly></td>';
                                                     echo '<td><input type="number" class="form-control quantity" name="quantity[]" value="' . $rowItem["quantity"] . '" placeholder="จำนวน" required oninput="calculateTotal(this)"></td>';
-                                                    echo '<td><input type="text" class="form-control" name="unit[]" value="' . $rowItem["unit"] . '" placeholder="หน่วย" required></td>';
+                                                    echo '<td><input type="text" class="form-control" name="unit[]" value="' . htmlspecialchars($rowItem["unit"]) . '" placeholder="หน่วย" required></td>';
                                                     echo '<td><input type="number" class="form-control price_per_unit" name="price_per_unit[]" value="' . $rowItem["price_per_unit"] . '" placeholder="ราคาต่อหน่วย" required oninput="calculateTotal(this)"></td>';
                                                     echo '<td><input type="number" class="form-control total" name="total[]" value="' . ($rowItem["quantity"] * $rowItem["price_per_unit"]) . '" placeholder="รวมเงิน" readonly></td>';
                                                     echo '</tr>';
                                                 }
                                             } else {
                                                 echo '<tr>';
-                                                echo '<td colspan="5">ไม่พบข้อมูล</td>';
+                                                echo '<td colspan="7">ไม่พบข้อมูล</td>';
                                                 echo '</tr>';
                                             }
                                             ?>
@@ -394,6 +417,46 @@ if (isset($_SESSION['username'])) {
         // เปลี่ยน input งบประมาณเมื่อเปลี่ยนประเภทโครงการ
         document.getElementById('projectType').addEventListener('change', function() {
             updateBudgetInput(this.value, '');
+        });
+    </script>
+
+    <!-- jQuery and jQuery UI for Autocomplete -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+
+    <script>
+        $(function() {
+            // Autocomplete สำหรับรายการสินค้า
+            $(document).on('focus', '.item_name_input', function() {
+                if (!$(this).data('autocomplete-initialized')) {
+                    $(this).autocomplete({
+                        source: function(request, response) {
+                            $.ajax({
+                                url: "search_middle_price.php",
+                                dataType: "json",
+                                data: {
+                                    term: request.term
+                                },
+                                success: function(data) {
+                                    response(data);
+                                }
+                            });
+                        },
+                        minLength: 2,
+                        select: function(event, ui) {
+                            // หา row ที่เกี่ยวข้อง
+                            var row = $(this).closest('tr');
+
+                            // ใส่ค่าในฟิลด์ต่างๆ
+                            $(this).val(ui.item.value);
+                            row.find('input[name="middle_price[]"]').val(ui.item.price);
+                            row.find('input[name="middle_unit[]"]').val(ui.item.unit);
+
+                            return false;
+                        }
+                    }).data('autocomplete-initialized', true);
+                }
+            });
         });
     </script>
 

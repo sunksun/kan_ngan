@@ -40,25 +40,35 @@ if ($conn->query($sqlDeleteItems) === TRUE) {
 
 // เพิ่มข้อมูลใหม่เข้าสู่ตาราง items
 $item_names = $_POST['item_name'];
+$middle_prices = $_POST['middle_price'];
+$middle_units = $_POST['middle_unit'];
 $quantities = $_POST['quantity'];
 $units = $_POST['unit'];
 $price_per_units = $_POST['price_per_unit'];
 $totals = $_POST['total'];
 
+// เตรียมคำสั่ง SQL แบบ prepared statement
+$sqlInsertItem = "INSERT INTO items (kan_no, item_name, middle_price, middle_unit, quantity, unit, price_per_unit, total) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+$stmt = $conn->prepare($sqlInsertItem);
+
 for ($i = 0; $i < count($item_names); $i++) {
     $item_name = $item_names[$i];
+    $middle_price = $middle_prices[$i];
+    $middle_unit = $middle_units[$i];
     $quantity = $quantities[$i];
     $unit = $units[$i];
     $price_per_unit = $price_per_units[$i];
     $total = $totals[$i];
 
-    // เตรียมคำสั่ง SQL สำหรับเพิ่มข้อมูลใหม่ลงในตาราง items
-    $sqlInsertItem = "INSERT INTO items (kan_no, item_name, quantity, unit, price_per_unit, total) VALUES ('$kan_no', '$item_name', '$quantity', '$unit', '$price_per_unit', '$total')";
-    if ($conn->query($sqlInsertItem) !== TRUE) {
+    // ผูกค่าและเพิ่มข้อมูล
+    $stmt->bind_param("ssdsisdd", $kan_no, $item_name, $middle_price, $middle_unit, $quantity, $unit, $price_per_unit, $total);
+    if ($stmt->execute() === FALSE) {
         echo '<script>';
-        echo 'alert("เกิดข้อผิดพลาดในการเพิ่มข้อมูลใหม่ในตาราง items: ' . $conn->error . '");';
+        echo 'alert("เกิดข้อผิดพลาดในการเพิ่มข้อมูลใหม่ในตาราง items: ' . $stmt->error . '");';
         echo '</script>';
     }
 }
+
+$stmt->close();
 
 $conn->close();
