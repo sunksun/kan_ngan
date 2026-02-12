@@ -13,8 +13,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // รับค่าจากฟอร์ม
     $kan_nos = $_POST['kan_no'];
     $item_names = $_POST['item_name'];
+    $middle_prices = $_POST['middle_price'];
+    $middle_units = $_POST['middle_unit'];
     $quantities = $_POST['quantity'];
-    $units = $_POST['unit']; // เปลี่ยนกลับเป็น unit
+    $units = $_POST['unit'];
     $price_per_units = $_POST['price_per_unit'];
     $totals = $_POST['total'];
     $reason = $_POST['reason'];
@@ -32,12 +34,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     }
 
     // เตรียมคำสั่ง SQL
-    $sql = "INSERT INTO items (kan_no, item_name, quantity, unit, price_per_unit, total) VALUES (?, ?, ?, ?, ?, ?)";
+    $sql = "INSERT INTO items (kan_no, item_name, middle_price, middle_unit, quantity, unit, price_per_unit, total) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     $stmt = $conn->prepare($sql);
 
     // วนลูปเพิ่มข้อมูลแต่ละรายการ
     for ($i = 0; $i < count($item_names); $i++) {
-        $stmt->bind_param("ssisdd", $kan_nos, $item_names[$i], $quantities[$i], $units[$i], $price_per_units[$i], $totals[$i]);
+        $stmt->bind_param("ssdsisdd", $kan_nos, $item_names[$i], $middle_prices[$i], $middle_units[$i], $quantities[$i], $units[$i], $price_per_units[$i], $totals[$i]);
         if ($stmt->execute() === FALSE) {
             echo "Error: " . $stmt->error . "<br>";
         }

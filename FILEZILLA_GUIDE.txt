@@ -1,0 +1,202 @@
+================================================================================
+  คู่มือการใช้ FileZilla สำหรับอัปโหลดไฟล์ขึ้น Server
+================================================================================
+
+## 1. การตั้งค่า FileZilla Filter (ไม่อัปโหลดไฟล์ที่ไม่จำเป็น)
+
+วิธีที่ 1: ใช้ Directory Comparison Filter
+-------------------------------------------
+1. เปิด FileZilla
+2. เมนู View > Directory Comparison > Enable
+3. เมนู View > Filename filters
+4. ใส่รายการไฟล์ที่ต้องการกรอง:
+
+   *.log
+   *.backup
+   *.bak
+   *.tmp
+   .DS_Store
+   .git
+   .gitignore
+   .ftpignore
+   .vscode
+   .idea
+   test.html
+   test*.php
+   CLAUDE.md
+   README.md
+   UPLOAD_CHECKLIST.txt
+   FILEZILLA_GUIDE.txt
+
+5. คลิก OK
+
+วิธีที่ 2: ใช้ Edit > Filters
+-----------------------------
+1. เมนู Edit > Settings
+2. เลือก Transfers > File Types
+3. คลิก "Add" เพื่อเพิ่ม filter rules
+4. ตั้งชื่อ: "Kan Ngan Upload Filter"
+5. เพิ่ม rules:
+   - Filename matches: *.log (Exclude)
+   - Filename matches: *.backup (Exclude)
+   - Filename matches: .git* (Exclude)
+   - Directory matches: .git (Exclude)
+   - Directory matches: .vscode (Exclude)
+   - Directory matches: vendor (Exclude - ถ้าไม่จำเป็น)
+   - Directory matches: tmp (Exclude)
+
+6. คลิก OK
+
+================================================================================
+
+## 2. การเชื่อมต่อ Server
+
+Host: sunksundev.com หรือ ftp.sunksundev.com
+Username: [your FTP username]
+Password: [your FTP password]
+Port: 21 (FTP) หรือ 22 (SFTP)
+
+Tips:
+- ใช้ SFTP (SSH File Transfer Protocol) ถ้าเป็นไปได้ เพื่อความปลอดภัย
+- บันทึก connection ใน Site Manager เพื่อใช้งานในครั้งต่อไป
+
+================================================================================
+
+## 3. การอัปโหลดไฟล์แบบเลือกเฉพาะ (Selective Upload)
+
+สำหรับครั้งนี้ อัปโหลดเฉพาะ 4 ไฟล์:
+
+ขั้นตอน:
+1. ไปที่โฟลเดอร์ local: /Applications/XAMPP/xamppfiles/htdocs/kan_ngan/
+2. ไปที่โฟลเดอร์ remote: /public_html/kan_ngan/ หรือ /htdocs/kan_ngan/
+3. เลือกไฟล์ที่ต้องการอัปโหลด (กด Command/Ctrl + คลิก):
+   
+   ✅ forms-items.php
+   ✅ forms-items_save.php
+   ✅ search_middle_price.php
+   ✅ generate_pdf_new.php
+
+4. คลิกขวา > Upload
+5. ถ้าถามว่า "File already exists" เลือก:
+   - Overwrite: Yes
+   - Apply to current queue only: Yes
+   - Resume: No (เขียนทับทั้งไฟล์)
+
+================================================================================
+
+## 4. การตั้งค่า File Permissions
+
+หลังอัปโหลดไฟล์แล้ว:
+
+1. ไปที่ไฟล์ search_middle_price.php บน Server (ฝั่งขวา)
+2. คลิกขวา > File permissions (หรือ File attributes)
+3. ตั้งค่า:
+   
+   Numeric value: 644
+   
+   หรือ
+   
+   Owner permissions: Read, Write
+   Group permissions: Read
+   Public permissions: Read
+   
+   [X] Read    [X] Write   [ ] Execute  (Owner)
+   [X] Read    [ ] Write   [ ] Execute  (Group)
+   [X] Read    [ ] Write   [ ] Execute  (Public)
+
+4. คลิก OK
+
+ทำซ้ำสำหรับไฟล์อื่นๆ (แนะนำ):
+- forms-items.php → 644 หรือ 755
+- forms-items_save.php → 644 หรือ 755
+- generate_pdf_new.php → 644 หรือ 755
+
+================================================================================
+
+## 5. การ Backup ไฟล์ก่อนเขียนทับ
+
+แนะนำให้ Backup ไฟล์เดิมบน Server:
+
+1. เลือกไฟล์บน Server (ฝั่งขวา)
+2. คลิกขวา > Rename
+3. เปลี่ยนชื่อเป็น:
+   - forms-items.php → forms-items.php.backup_20260212
+   - forms-items_save.php → forms-items_save.php.backup_20260212
+   - generate_pdf_new.php → generate_pdf_new.php.backup_20260212
+
+4. จากนั้นอัปโหลดไฟล์ใหม่
+
+================================================================================
+
+## 6. การตรวจสอบว่าอัปโหลดสำเร็จ
+
+1. ตรวจสอบขนาดไฟล์ (เทียบกับ local)
+2. ตรวจสอบวันที่แก้ไขล่าสุด (Modified date)
+3. ตรวจสอบ Permissions = 644
+
+ตัวอย่าง:
+```
+ชื่อไฟล์                    ขนาด    Modified              Permissions
+forms-items.php            18 KB    2026-02-12 09:45      644
+forms-items_save.php       2.1 KB   2026-02-05 20:37      644
+search_middle_price.php    1.1 KB   2026-02-05 06:55      644
+generate_pdf_new.php       64 KB    2026-02-12 09:45      644
+```
+
+================================================================================
+
+## 7. การใช้ Synchronized Browsing (Advanced)
+
+ถ้าต้องการเปรียบเทียบไฟล์ local กับ server:
+
+1. เมนู View > Synchronized browsing > Enable
+2. FileZilla จะแสดงโฟลเดอร์ที่ตรงกันทั้งสองฝั่ง
+3. เมนู View > Directory comparison > Enable
+4. ไฟล์ที่แตกต่างจะถูก highlight:
+   - สีเหลือง = ไฟล์ใหม่กว่า
+   - สีเขียว = ไฟล์เท่ากัน
+   - สีแดง = ไฟล์เก่ากว่า
+
+5. คลิกขวาที่ไฟล์สีเหลือง > Upload
+
+================================================================================
+
+## 8. Transfer Queue Tips
+
+- ลากไฟล์ลงในช่อง "Queued files" ด้านล่างเพื่อเตรียมอัปโหลด
+- คลิก "Process Queue" เมื่อพร้อม
+- ตรวจสอบ "Successful transfers" และ "Failed transfers" tabs
+
+================================================================================
+
+## 9. Troubleshooting
+
+ปัญหา: "Permission denied"
+✅ ตรวจสอบ FTP username/password ถูกต้อง
+✅ ลองใช้ SFTP แทน FTP
+✅ ติดต่อ hosting support เพื่อเช็ค permissions
+
+ปัญหา: "Connection timeout"
+✅ ตรวจสอบ internet connection
+✅ ลองเปลี่ยน Port (21 → 22)
+✅ ปิด Firewall ชั่วคราว
+
+ปัญหา: "Transfer failed"
+✅ เปลี่ยน Transfer mode: Auto → Binary
+✅ ลอง resume transfer
+✅ ตรวจสอบ disk space บน server
+
+================================================================================
+
+## 10. Quick Checklist
+
+☑️ เชื่อมต่อ Server สำเร็จ
+☑️ Backup ไฟล์เดิมบน Server
+☑️ อัปโหลด 4 ไฟล์
+☑️ ตั้ง permissions = 644
+☑️ ตรวจสอบขนาดไฟล์ตรงกัน
+☑️ ทดสอบ URL ตาม UPLOAD_CHECKLIST.txt
+
+================================================================================
+
+เสร็จสิ้น! 🚀

@@ -1,0 +1,106 @@
+================================================================================
+  สรุปไฟล์ทั้งหมดที่เกี่ยวข้องกับการอัปโหลด
+  วันที่: 12 กุมภาพันธ์ 2569
+================================================================================
+
+## ไฟล์คู่มือและเอกสาร (3 ไฟล์) - ไม่ต้องอัปโหลดขึ้น Server
+
+1. UPLOAD_CHECKLIST.txt
+   - รายการไฟล์ที่ต้องอัปโหลด
+   - SQL Script ที่ต้องรัน
+   - ขั้นตอนการอัปโหลด
+   - URL สำหรับทดสอบ
+   - Troubleshooting guide
+
+2. FILEZILLA_GUIDE.txt
+   - คู่มือการใช้ FileZilla
+   - วิธีตั้งค่า Filter
+   - การตั้งค่า Permissions
+   - การ Backup ไฟล์
+
+3. FILES_SUMMARY.txt (ไฟล์นี้)
+   - สรุปไฟล์ทั้งหมด
+
+================================================================================
+
+## ไฟล์ SQL Script (1 ไฟล์) - อัปโหลดหรือรันผ่าน phpMyAdmin
+
+4. update_items_table.sql
+   - SQL script สำหรับเพิ่มคอลัมน์ middle_price และ middle_unit
+   - รันผ่าน phpMyAdmin หรือ MySQL CLI
+
+================================================================================
+
+## ไฟล์ที่มีอยู่แล้ว (ไม่ต้องทำอะไร)
+
+5. .ftpignore
+   - รายการไฟล์ที่ FileZilla ไม่ควรอัปโหลด
+   - ใช้คู่กับ FileZilla Filters
+
+================================================================================
+
+## ไฟล์ PHP ที่ต้องอัปโหลด (4 ไฟล์)
+
+6. forms-items.php (18 KB)
+   - หน้าฟอร์มกรอกรายการพัสดุ
+   - มี autocomplete functionality
+   - แสดงคอลัมน์ราคากลางและหน่วย
+
+7. forms-items_save.php (2.1 KB)
+   - บันทึกข้อมูลจากฟอร์ม
+   - INSERT 8 ฟิลด์ลง database
+   - รวม middle_price และ middle_unit
+
+8. search_middle_price.php (1.1 KB) ⭐ NEW FILE
+   - API endpoint สำหรับ autocomplete
+   - ค้นหาสินค้าจากตาราง middle_price
+   - คืนค่า JSON
+   - ✋ ต้องตั้ง permissions = 644
+
+9. generate_pdf_new.php (64 KB)
+   - สร้าง PDF รายงาน
+   - แสดงราคากลางและหน่วย
+   - แสดง "-" เมื่อไม่มีข้อมูล
+
+================================================================================
+
+## การใช้งานไฟล์คู่มือ
+
+### ก่อนอัปโหลด:
+1. อ่าน UPLOAD_CHECKLIST.txt ทั้งหมด
+2. อ่าน FILEZILLA_GUIDE.txt วิธีการใช้ FileZilla
+
+### ระหว่างอัปโหลด:
+1. เปิด UPLOAD_CHECKLIST.txt ข้างๆ FileZilla
+2. ทำตามขั้นตอนทีละขั้น
+3. เช็ครายการที่ทำเสร็จแล้ว
+
+### หลังอัปโหลด:
+1. รัน update_items_table.sql บน Server
+2. ทดสอบตาม URL ใน UPLOAD_CHECKLIST.txt
+3. เก็บไฟล์คู่มือไว้สำหรับอ้างอิง
+
+================================================================================
+
+## Quick Reference
+
+อัปโหลด 4 ไฟล์:
+✅ forms-items.php
+✅ forms-items_save.php
+✅ search_middle_price.php (NEW - ตั้ง permissions 644)
+✅ generate_pdf_new.php
+
+รัน SQL:
+✅ update_items_table.sql
+
+ทดสอบ 3 URL:
+✅ .../search_middle_price.php?term=กระดาษ
+✅ .../forms-items.php?kan_no=KAN_NGAN0001
+✅ .../generate_pdf_new.php?id=1
+
+================================================================================
+
+Location: /Applications/XAMPP/xamppfiles/htdocs/kan_ngan/
+
+เอกสารเหล่านี้จัดทำโดย: Claude Code
+วันที่: 12 กุมภาพันธ์ 2569

@@ -303,7 +303,7 @@ $html = '
 
 if ($show_strategic_project) {
     $html .= '
-    <p style="font-size: 8pt; font-weight: normal; margin-bottom: 0; line-height: 1.2; text-align: right;">โครงการยุทธศาสตร์มหาวิทยาลัยราชภัฏเพื่อการพัฒนาท้องถิ่น พ.ศ.2568</p>
+    <p style="font-size: 8pt; font-weight: normal; margin-bottom: 0; line-height: 1.2; text-align: right;">โครงการยุทธศาสตร์มหาวิทยาลัยราชภัฏเพื่อการพัฒนาท้องถิ่น พ.ศ.2569</p>
     ';
 }
 
@@ -913,12 +913,16 @@ foreach ($items as $item) {
     // แสดงเหตุผลเฉพาะแถวแรกเท่านั้น
     $reason_text = ($item_number == 1) ? htmlspecialchars($report['reason']) : '';
 
+    // แสดงราคากลางและหน่วยจากฐานข้อมูล (ถ้ามี) ไม่มีให้แสดง -
+    $middle_price_display = (!empty($item['middle_price']) && $item['middle_price'] > 0) ? number_format($item['middle_price'], 2) : '-';
+    $middle_unit_display = !empty($item['middle_unit']) ? htmlspecialchars($item['middle_unit']) : '-';
+
     $html .= '
         <tr>
             <td style="border: 1px solid black; padding: 5px 2px; font-size: 10pt; font-weight: normal; text-align: center; line-height: 1.2;">' . $item_number . '</td>
             <td style="border: 1px solid black; padding: 5px 2px; font-size: 8.5pt; font-weight: normal; line-height: 1.2;">' . htmlspecialchars($item['item_name']) . '</td>
-            <td style="border: 1px solid black; padding: 5px 2px; font-size: 10pt; font-weight: normal; text-align: right; line-height: 1.2;"></td>
-            <td style="border: 1px solid black; padding: 5px 2px; font-size: 10pt; font-weight: normal; text-align: center; line-height: 1.2;"></td>
+            <td style="border: 1px solid black; padding: 5px 2px; font-size: 10pt; font-weight: normal; text-align: center; line-height: 1.2;">' . $middle_price_display . '</td>
+            <td style="border: 1px solid black; padding: 5px 2px; font-size: 10pt; font-weight: normal; text-align: center; line-height: 1.2;">' . $middle_unit_display . '</td>
             <td style="border: 1px solid black; padding: 5px 2px; font-size: 10pt; font-weight: normal; text-align: center; line-height: 1.2;">' . htmlspecialchars($item['quantity']) . '</td>
             <td style="border: 1px solid black; padding: 5px 2px; font-size: 8.5pt; font-weight: normal; text-align: center; line-height: 1.2;">' . htmlspecialchars($item['unit']) . '</td>
             <td style="border: 1px solid black; padding: 5px 2px; font-size: 10pt; font-weight: normal; text-align: right; line-height: 1.2;">' . number_format($item['price_per_unit'], 2) . '</td>

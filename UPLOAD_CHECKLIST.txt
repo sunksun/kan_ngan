@@ -1,0 +1,178 @@
+================================================================================
+  รายการไฟล์ที่ต้องอัปโหลดขึ้น Server (sunksundev.com)
+  วันที่: 12 กุมภาพันธ์ 2569
+  Feature: เพิ่มคอลัมน์ราคากลาง (middle_price) และหน่วย (middle_unit)
+================================================================================
+
+## ไฟล์ที่ต้องอัปโหลด (4 ไฟล์)
+
+✅ CRITICAL FILES - ต้องอัปโหลด:
+---------------------------------
+1. forms-items.php                  (18 KB)
+   - เพิ่ม autocomplete functionality
+   - เพิ่มคอลัมน์ ราคา(กลาง) และ หน่วย
+   
+2. forms-items_save.php             (2.1 KB)
+   - บันทึก middle_price และ middle_unit
+   - แก้ไข SQL INSERT เป็น 8 ฟิลด์
+   
+3. search_middle_price.php          (1.1 KB) ⭐ NEW FILE
+   - API endpoint สำหรับ autocomplete
+   - ✋ สำคัญ: ต้องตั้ง permissions เป็น 644
+   
+4. generate_pdf_new.php             (64 KB)
+   - แสดง middle_price และ middle_unit ใน PDF
+   - แสดง "-" เมื่อไม่มีข้อมูล
+
+================================================================================
+
+## SQL Script ที่ต้องรันบน Server Database
+
+⭐ แนะนำ: ใช้ไฟล์ update_items_table.sql (ป้องกันการรันซ้ำ)
+
+วิธีที่ 1: ใช้ไฟล์ SQL Script (แนะนำ)
+-------------------------------------------
+1. เข้า phpMyAdmin บน Server
+2. เลือก Database: sunksund_kan_ngan
+3. คลิก Import > Choose File
+4. เลือกไฟล์: update_items_table.sql
+5. คลิก Go
+
+หรือ MySQL CLI:
+mysql -u sunksund_kan_ngan -p sunksund_kan_ngan < update_items_table.sql
+
+วิธีที่ 2: Copy-Paste SQL (สำหรับครั้งแรกเท่านั้น)
+------------------------------------------------------
+เข้า phpMyAdmin > SQL tab แล้ว Paste คำสั่งนี้:
+
+```sql
+USE sunksund_kan_ngan;
+
+-- ตรวจสอบว่าคอลัมน์มีอยู่แล้วหรือยัง (ป้องกัน error)
+ALTER TABLE items
+ADD COLUMN IF NOT EXISTS middle_price DECIMAL(10,2) AFTER item_name,
+ADD COLUMN IF NOT EXISTS middle_unit VARCHAR(50) AFTER middle_price;
+
+-- ตรวจสอบโครงสร้างตาราง
+DESCRIBE items;
+
+-- ตรวจสอบว่ามีข้อมูลในตาราง middle_price
+SELECT COUNT(*) as total FROM middle_price;
+```
+
+⚠️ หมายเหตุ:
+- Script ป้องกันการรันซ้ำ (ถ้ามีคอลัมน์แล้วจะไม่ error)
+- ใช้เวลาประมาณ 1-2 วินาที
+- ไม่กระทบข้อมูลเดิม
+
+================================================================================
+
+## ขั้นตอนการอัปโหลดด้วย FileZilla
+
+1. เชื่อมต่อ FTP ไปยัง sunksundev.com
+   Host: sunksundev.com หรือ ftp.sunksundev.com
+   
+2. ไปยังโฟลเดอร์ /public_html/kan_ngan/ หรือ /htdocs/kan_ngan/
+
+3. อัปโหลดไฟล์ทั้ง 4 ไฟล์ (เขียนทับไฟล์เดิม)
+   - Overwrite: Yes
+   - Transfer mode: Auto
+   
+4. ตั้งค่า File Permissions:
+   - คลิกขวาที่ search_middle_price.php
+   - File permissions > Numeric value: 644
+   - ✅ OK
+
+================================================================================
+
+## สิ่งที่ต้องตรวจสอบบน Server
+
+☑️ 1. Database Credentials (/public_html/kan_ngan/connect_db.php)
+   ต้องมีข้อมูลดังนี้:
+   ```php
+   $servername = "localhost";
+   $username = "sunksund_kan_ngan";
+   $password = "T7uB4n9ThYrCStfzpv4Z";
+   $dbname = "sunksund_kan_ngan";
+   ```
+
+☑️ 2. ตรวจสอบว่าตาราง middle_price มีข้อมูล (ควรมี 382 รายการ)
+
+☑️ 3. File Permissions:
+   - search_middle_price.php = 644
+   - forms-items.php = 644 หรือ 755
+   - forms-items_save.php = 644 หรือ 755
+   - generate_pdf_new.php = 644 หรือ 755
+
+================================================================================
+
+## URL สำหรับทดสอบหลังอัปโหลด
+
+1. ทดสอบ Autocomplete API:
+   https://sunksundev.com/kan_ngan/search_middle_price.php?term=กระดาษ
+   ✅ ควรคืนค่า JSON array
+
+2. ทดสอบหน้าฟอร์ม:
+   https://sunksundev.com/kan_ngan/forms-items.php?kan_no=KAN_NGAN0001
+   ✅ พิมพ์ "กระดาษ" ในช่องรายการ
+   ✅ ควรแสดง autocomplete suggestions
+   ✅ เลือกสินค้า ควร auto-fill ราคาและหน่วย
+
+3. ทดสอบสร้าง PDF:
+   https://sunksundev.com/kan_ngan/generate_pdf_new.php?id=1
+   ✅ ตรวจสอบคอลัมน์ ราคา(กลาง) และ หน่วย
+   ✅ รายการที่มีข้อมูล ควรแสดงราคาและหน่วย
+   ✅ รายการที่ไม่มีข้อมูล ควรแสดง "-"
+
+================================================================================
+
+## ไฟล์ที่ไม่ต้องอัปโหลด (ตามไฟล์ .ftpignore)
+
+❌ ไม่ต้องอัปโหลด:
+- .git/
+- .gitignore
+- .ftpignore
+- .DS_Store
+- .vscode/
+- .idea/
+- CLAUDE.md
+- README.md
+- UPLOAD_CHECKLIST.txt (ไฟล์นี้)
+- test.html
+- test*.php
+- *.log
+- *.backup
+- tmp/
+- vendor/ (ถ้า server มี composer แล้ว)
+- fonts/ (ถ้า server มีอยู่แล้ว)
+
+================================================================================
+
+## Troubleshooting
+
+ปัญหา: Autocomplete ไม่ทำงาน
+✅ ตรวจสอบ search_middle_price.php permissions = 644
+✅ ตรวจสอบ Console ใน Browser (F12) หา error
+✅ ทดสอบ API โดยตรงที่ URL ข้างบน
+
+ปัญหา: Database connection error
+✅ ตรวจสอบ connect_db.php มี credentials ถูกต้อง
+✅ ตรวจสอบว่ารัน SQL ALTER TABLE แล้ว
+
+ปัญหา: PDF ไม่แสดงราคากลาง
+✅ ตรวจสอบว่าข้อมูลในตาราง items มี middle_price และ middle_unit
+✅ ทดสอบบันทึกข้อมูลใหม่ที่ forms-items.php
+
+================================================================================
+
+## Backup ก่อนอัปโหลด
+
+แนะนำให้ Backup ไฟล์เดิมบน Server ก่อน:
+1. forms-items.php → forms-items.php.backup_20260212
+2. forms-items_save.php → forms-items_save.php.backup_20260212
+3. generate_pdf_new.php → generate_pdf_new.php.backup_20260212
+
+================================================================================
+
+สรุป: อัปโหลด 4 ไฟล์ → รัน SQL Script → ตั้ง Permissions → ทดสอบ 3 URL
+
