@@ -3,7 +3,7 @@
 require_once 'connect_db.php';
 
 // รับค่าที่ส่งมาจากฟอร์ม
-$report_id = $_GET['report_id'];
+$report_id = intval($_GET['report_id']);
 $kan_no = $_GET['kan_no'];
 $field = $_POST['field'];
 $name = $_POST['name'];
@@ -17,27 +17,6 @@ $project_number = $_POST['project_number'];
 $budget_used = $_POST['total_budget_used'];
 $reason = $_POST['reason'];
 
-// เตรียมคำสั่ง SQL สำหรับอัปเดตข้อมูลในตาราง report_request
-$sqlUpdateReport = "UPDATE report_request SET field='$field', name='$name', purpose='$purpose', purpose_='$purpose_', project_name='$project_name', activity='$activity', project_type='$project_type', budget='$budget', project_number='$project_number', budget_used='$budget_used', reason='$reason' WHERE report_id='$report_id'";
-if ($conn->query($sqlUpdateReport) === TRUE) {
-    echo '<script>';
-    echo 'alert("บันทึกข้อมูลเรียบร้อยแล้ว");';
-    echo 'window.location.href="dashboard.php";'; // เปลี่ยนเส้นทางไปที่ dashboard.php
-    echo '</script>';
-} else {
-    echo "เกิดข้อผิดพลาดในการบันทึกข้อมูล: " . $conn->error . "<br>";
-}
-
-// ลบข้อมูลเก่าในตาราง items ที่เกี่ยวข้องกับ report_id นี้
-$sqlDeleteItems = "DELETE FROM items WHERE kan_no='$kan_no'";
-if ($conn->query($sqlDeleteItems) === TRUE) {
-    echo '<script>';
-    echo 'alert("ลบข้อมูลเก่าในตาราง items เรียบร้อยแล้ว");';
-    echo '</script>';
-} else {
-    echo "เกิดข้อผิดพลาดในการลบข้อมูลเก่าในตาราง items: " . $conn->error . "<br>";
-}
-
 // เพิ่มข้อมูลใหม่เข้าสู่ตาราง items
 $item_names = $_POST['item_name'];
 $middle_prices = $_POST['middle_price'];
@@ -47,28 +26,67 @@ $units = $_POST['unit'];
 $price_per_units = $_POST['price_per_unit'];
 $totals = $_POST['total'];
 
-// เตรียมคำสั่ง SQL แบบ prepared statement
-$sqlInsertItem = "INSERT INTO items (kan_no, item_name, middle_price, middle_unit, quantity, unit, price_per_unit, total) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-$stmt = $conn->prepare($sqlInsertItem);
+// เริ่มต้น transaction
+$conn->begin_transaction();
 
-for ($i = 0; $i < count($item_names); $i++) {
-    $item_name = $item_names[$i];
-    $middle_price = $middle_prices[$i];
-    $middle_unit = $middle_units[$i];
-    $quantity = $quantities[$i];
-    $unit = $units[$i];
-    $price_per_unit = $price_per_units[$i];
-    $total = $totals[$i];
+try {
+    // 1. อัปเดตข้อมูลในตาราง report_request
+    $sqlUpdateReport = "UPDATE report_request SET field=?, name=?, purpose=?, purpose_=?, project_name=?, activity=?, project_type=?, budget=?, project_number=?, budget_used=?, reason=? WHERE report_id=?";
+    $stmt_update = $conn->prepare($sqlUpdateReport);
+    $stmt_update->bind_param("sssssssssssi", $field, $name, $purpose, $purpose_, $project_name, $activity, $project_type, $budget, $project_number, $budget_used, $reason, $report_id);
 
-    // ผูกค่าและเพิ่มข้อมูล
-    $stmt->bind_param("ssdsisdd", $kan_no, $item_name, $middle_price, $middle_unit, $quantity, $unit, $price_per_unit, $total);
-    if ($stmt->execute() === FALSE) {
-        echo '<script>';
-        echo 'alert("เกิดข้อผิดพลาดในการเพิ่มข้อมูลใหม่ในตาราง items: ' . $stmt->error . '");';
-        echo '</script>';
+    if (!$stmt_update->execute()) {
+        throw new Exception("ไม่สามารถอัปเดตข้อมูลหลักได้");
     }
-}
+    $stmt_update->close();
 
-$stmt->close();
+    // 2. ลบข้อมูลเก่าในตาราง items ที่เกี่ยวข้องกับ kan_no นี้
+    $sqlDeleteItems = "DELETE FROM items WHERE kan_no=?";
+    $stmt_delete = $conn->prepare($sqlDeleteItems);
+    $stmt_delete->bind_param("s", $kan_no);
+
+    if (!$stmt_delete->execute()) {
+        throw new Exception("ไม่สามารถลบข้อมูลเก่าในตาราง items ได้");
+    }
+    $stmt_delete->close();
+
+    // 3. เพิ่มข้อมูลใหม่เข้าสู่ตาราง items
+    $sqlInsertItem = "INSERT INTO items (kan_no, item_name, middle_price, middle_unit, quantity, unit, price_per_unit, total) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+    $stmt_insert = $conn->prepare($sqlInsertItem);
+
+    for ($i = 0; $i < count($item_names); $i++) {
+        $item_name = $item_names[$i];
+        $middle_price = $middle_prices[$i];
+        $middle_unit = $middle_units[$i];
+        $quantity = $quantities[$i];
+        $unit = $units[$i];
+        $price_per_unit = $price_per_units[$i];
+        $total = $totals[$i];
+
+        $stmt_insert->bind_param("ssdsisdd", $kan_no, $item_name, $middle_price, $middle_unit, $quantity, $unit, $price_per_unit, $total);
+
+        if (!$stmt_insert->execute()) {
+            throw new Exception("ไม่สามารถเพิ่มข้อมูลใหม่ในตาราง items ได้");
+        }
+    }
+    $stmt_insert->close();
+
+    // commit transaction
+    $conn->commit();
+
+    echo '<script>';
+    echo 'alert("บันทึกข้อมูลเรียบร้อยแล้ว");';
+    echo 'window.location.href="dashboard.php";';
+    echo '</script>';
+
+} catch (Exception $e) {
+    // rollback ถ้าเกิดข้อผิดพลาด
+    $conn->rollback();
+
+    echo '<script>';
+    echo 'alert("เกิดข้อผิดพลาด: ' . addslashes($e->getMessage()) . '");';
+    echo 'history.back();';
+    echo '</script>';
+}
 
 $conn->close();

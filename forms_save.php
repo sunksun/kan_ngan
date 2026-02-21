@@ -22,31 +22,60 @@ $project_number = $_POST['project_number'];
 $budget_used = '';
 $reason = '';
 
-// เตรียมคำสั่ง SQL สำหรับการเพิ่มข้อมูล
-$sql = "INSERT INTO report_request (user_id, kan_no, field, name, purpose, purpose_, project_name, activity, project_type, budget, project_number, budget_used, reason)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+// เริ่มต้น transaction เพื่อป้องกัน race condition
+$conn->begin_transaction();
 
-// สร้างคำสั่ง prepared statement
-$stmt = $conn->prepare($sql);
+try {
+    // ล็อกตารางและหาเลขที่ใบกันใหม่ภายใน transaction
+    $sql_lock = "SELECT IFNULL(MAX(CAST(SUBSTRING(kan_no, 9) AS UNSIGNED)), 0) + 1 AS next_number FROM report_request FOR UPDATE";
+    $result = $conn->query($sql_lock);
 
-if ($stmt === false) {
-    die("ข้อผิดพลาดในการเตรียม statement: " . $conn->error);
-}
+    if ($result && $result->num_rows > 0) {
+        $row = $result->fetch_assoc();
+        $next_number = $row['next_number'];
+        $kan_no = "KAN_NGAN" . str_pad($next_number, 4, '0', STR_PAD_LEFT);
+    } else {
+        throw new Exception("ไม่สามารถสร้างเลขที่ใบกันได้");
+    }
 
-// ผูกค่ากับ parameter
-$stmt->bind_param("issssssssssss", $user_id, $row_count, $field, $name, $purpose, $purpose_, $project_name, $activity, $project_type, $budget, $project_number, $budget_used, $reason);
+    // เตรียมคำสั่ง SQL สำหรับการเพิ่มข้อมูล
+    $sql = "INSERT INTO report_request (user_id, kan_no, field, name, purpose, purpose_, project_name, activity, project_type, budget, project_number, budget_used, reason)
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
-// รันคำสั่ง
-if ($stmt->execute()) {
+    // สร้างคำสั่ง prepared statement
+    $stmt = $conn->prepare($sql);
+
+    if ($stmt === false) {
+        throw new Exception("ข้อผิดพลาดในการเตรียม statement: " . $conn->error);
+    }
+
+    // ผูกค่ากับ parameter (ใช้ $kan_no ที่สร้างใหม่แทน $row_count)
+    $stmt->bind_param("issssssssssss", $user_id, $kan_no, $field, $name, $purpose, $purpose_, $project_name, $activity, $project_type, $budget, $project_number, $budget_used, $reason);
+
+    // รันคำสั่ง
+    if (!$stmt->execute()) {
+        throw new Exception("ข้อผิดพลาดในการบันทึก: " . $stmt->error);
+    }
+
+    // commit transaction
+    $conn->commit();
+
     // แสดง alert และเปลี่ยนหน้า
     echo '<script>';
     echo 'alert("บันทึกข้อมูลเรียบร้อยแล้ว ไปหน้าถัดไป");';
-    echo 'location.href="forms-items.php?kan_no=' . $row_count . '";';
+    echo 'location.href="forms-items.php?kan_no=' . $kan_no . '";';
     echo '</script>';
-} else {
-    echo "ข้อผิดพลาด: " . $stmt->error;
+
+    $stmt->close();
+
+} catch (Exception $e) {
+    // rollback ถ้าเกิดข้อผิดพลาด
+    $conn->rollback();
+    echo '<script>';
+    echo 'alert("เกิดข้อผิดพลาด: ' . addslashes($e->getMessage()) . '");';
+    echo 'history.back();';
+    echo '</script>';
 }
 
-// ปิด statement และการเชื่อมต่อ
-$stmt->close();
+// ปิดการเชื่อมต่อ
 $conn->close();

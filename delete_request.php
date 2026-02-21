@@ -59,19 +59,33 @@ $report_data = $check_result->fetch_assoc();
 $kan_no = $report_data['kan_no'];
 $check_stmt->close();
 
-// ลบรายการย่อยในตาราง items ก่อน (ใช้ kan_no)
-$delete_items_sql = "DELETE FROM items WHERE kan_no = ?";
-$delete_items_stmt = $conn->prepare($delete_items_sql);
-$delete_items_stmt->bind_param("s", $kan_no);
-$delete_items_stmt->execute();
-$delete_items_stmt->close();
+// เริ่มต้น transaction เพื่อให้การลบเป็น atomic operation
+$conn->begin_transaction();
 
-// ลบรายการหลักในตาราง report_request
-$delete_sql = "DELETE FROM report_request WHERE report_id = ? AND user_id = ?";
-$delete_stmt = $conn->prepare($delete_sql);
-$delete_stmt->bind_param("ii", $report_id, $user_id);
+try {
+    // ลบรายการย่อยในตาราง items ก่อน (ใช้ kan_no)
+    $delete_items_sql = "DELETE FROM items WHERE kan_no = ?";
+    $delete_items_stmt = $conn->prepare($delete_items_sql);
+    $delete_items_stmt->bind_param("s", $kan_no);
 
-if ($delete_stmt->execute()) {
+    if (!$delete_items_stmt->execute()) {
+        throw new Exception("ไม่สามารถลบรายการย่อยได้");
+    }
+    $delete_items_stmt->close();
+
+    // ลบรายการหลักในตาราง report_request
+    $delete_sql = "DELETE FROM report_request WHERE report_id = ? AND user_id = ?";
+    $delete_stmt = $conn->prepare($delete_sql);
+    $delete_stmt->bind_param("ii", $report_id, $user_id);
+
+    if (!$delete_stmt->execute()) {
+        throw new Exception("ไม่สามารถลบรายการหลักได้");
+    }
+    $delete_stmt->close();
+
+    // commit transaction
+    $conn->commit();
+
     // ลบสำเร็จ
     echo '<!DOCTYPE html>
     <html>
@@ -93,7 +107,11 @@ if ($delete_stmt->execute()) {
     </script>
     </body>
     </html>';
-} else {
+
+} catch (Exception $e) {
+    // rollback ถ้าเกิดข้อผิดพลาด
+    $conn->rollback();
+
     // ลบไม่สำเร็จ
     echo '<!DOCTYPE html>
     <html>
@@ -117,6 +135,5 @@ if ($delete_stmt->execute()) {
     </html>';
 }
 
-$delete_stmt->close();
 $conn->close();
 ?>

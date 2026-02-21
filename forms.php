@@ -107,16 +107,19 @@ if (isset($_SESSION['username'])) {
         // ข้อมูลการเชื่อมต่อฐานข้อมูล
         require_once 'connect_db.php';
 
-        // คำสั่ง SQL เพื่อดึงข้อมูลจากตาราง
-        $sql = "SELECT * FROM report_request";
+        // ใช้ MAX เพื่อหาเลขที่ใบกันล่าสุด และบวก 1 เพื่อป้องกัน race condition
+        $sql = "SELECT IFNULL(MAX(CAST(SUBSTRING(kan_no, 9) AS UNSIGNED)), 0) + 1 AS next_number FROM report_request";
         $result = $conn->query($sql);
-        if ($result->num_rows > 0) {
-            $result->num_rows;
-        }
-        $conn->close();
 
-        $index = $result->num_rows;
-        $order_number = "KAN_NGAN" . str_pad($index + 1, 4, '0', STR_PAD_LEFT);
+        $next_number = 1;
+        if ($result && $result->num_rows > 0) {
+            $row = $result->fetch_assoc();
+            $next_number = $row['next_number'];
+        }
+
+        $order_number = "KAN_NGAN" . str_pad($next_number, 4, '0', STR_PAD_LEFT);
+
+        $conn->close();
         //echo $order_number;
         ?>
         <section class="section">

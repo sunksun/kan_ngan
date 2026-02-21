@@ -1,0 +1,198 @@
+# แก้ไขปัญหา kan_no ซ้ำกันในตาราง items
+
+## ปัญหาที่พบ
+เมื่อทดสอบบน server มีฟิลด์ kan_no ของ user อื่นในตาราง items ซ้ำกัน
+ทำให้ตอนออกรายงาน PDF มีรายการจากตาราง items ของ user อื่นมาด้วย
+
+## สาเหตุของปัญหา (Root Cause)
+
+### 1. Race Condition ในการสร้าง kan_no
+ไฟล์: forms.php (บรรทัด 111-119)
+
+```php
+// โค้ดเดิม (มีปัญหา)
+$sql = "SELECT * FROM report_request";
+$result = $conn->query($sql);
+$index = $result->num_rows;
+$order_number = "KAN_NGAN" . str_pad($index + 1, 4, '0', STR_PAD_LEFT);
+```
+
+**ปัญหา:**
+- เมื่อมี 2 users สร้างใบกันพร้อมกัน จะได้เลขเดียวกัน
+- ตัวอย่าง: ถ้ามี 5 records
+  - User A query → ได้ 5 rows → สร้าง KAN_NGAN0006
+  - User B query พร้อมกัน → ได้ 5 rows → สร้าง KAN_NGAN0006 (ซ้ำ!)
+  - ทั้งสองคนได้ kan_no เดียวกัน
+
+### 2. ไม่มี UNIQUE Constraint
+ตาราง report_request ไม่มี UNIQUE constraint บนฟิลด์ kan_no
+ทำให้ database ยอมรับค่าซ้ำได้
+
+### 3. ไม่มี Transaction Lock
+forms_save.php ไม่ได้ใช้ transaction ในการบันทึก
+ทำให้ไม่สามารถป้องกัน race condition ได้
+
+## วิธีแก้ไข
+
+### 1. เพิ่ม UNIQUE Constraint ที่ฐานข้อมูล
+```sql
+ALTER TABLE report_request ADD UNIQUE KEY unique_kan_no (kan_no);
+```
+
+สิ่งนี้จะ:
+- ป้องกันการบันทึก kan_no ซ้ำในตาราง report_request
+- Database จะ reject การ INSERT ที่มี kan_no ซ้ำ
+
+### 2. ปรับปรุง forms.php ให้ใช้ MAX แทน COUNT
+```php
+// โค้ดใหม่ (แก้ไขแล้ว)
+$sql = "SELECT IFNULL(MAX(CAST(SUBSTRING(kan_no, 9) AS UNSIGNED)), 0) + 1 AS next_number FROM report_request";
+$result = $conn->query($sql);
+
+$next_number = 1;
+if ($result && $result->num_rows > 0) {
+    $row = $result->fetch_assoc();
+    $next_number = $row['next_number'];
+}
+
+$order_number = "KAN_NGAN" . str_pad($next_number, 4, '0', STR_PAD_LEFT);
+```
+
+**ข้อดี:**
+- ใช้ MAX แทน COUNT จึงไม่ได้รับผลกระทบจากการลบข้อมูล
+- SUBSTRING(kan_no, 9) ดึงเลข 4 หลักจาก "KAN_NGAN0001" → "0001"
+- CAST(...AS UNSIGNED) แปลงเป็นตัวเลข → 1
+- MAX() หาค่าสูงสุด → ถ้ามี 0005 จะได้ 5
+- +1 เพื่อสร้างเลขใหม่ → 6
+- IFNULL(..., 0) ถ้าไม่มีข้อมูลให้เริ่มที่ 0
+
+### 3. ใช้ Transaction + FOR UPDATE Lock ใน forms_save.php
+```php
+// เริ่มต้น transaction
+$conn->begin_transaction();
+
+try {
+    // ล็อกตารางและหาเลขที่ใบกันใหม่
+    $sql_lock = "SELECT IFNULL(MAX(CAST(SUBSTRING(kan_no, 9) AS UNSIGNED)), 0) + 1 AS next_number
+                 FROM report_request FOR UPDATE";
+    $result = $conn->query($sql_lock);
+
+    $row = $result->fetch_assoc();
+    $next_number = $row['next_number'];
+    $kan_no = "KAN_NGAN" . str_pad($next_number, 4, '0', STR_PAD_LEFT);
+
+    // INSERT ข้อมูล
+    $sql = "INSERT INTO report_request (user_id, kan_no, ...) VALUES (?, ?, ...)";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("iss...", $user_id, $kan_no, ...);
+    $stmt->execute();
+
+    // commit transaction
+    $conn->commit();
+
+} catch (Exception $e) {
+    // rollback ถ้าเกิดข้อผิดพลาด
+    $conn->rollback();
+}
+```
+
+**ทำงานอย่างไร:**
+- `BEGIN TRANSACTION` เริ่ม transaction
+- `FOR UPDATE` lock rows ที่ SELECT ไว้ จนกว่าจะ commit
+- ถ้า User A เข้ามาก่อน:
+  - A lock ตาราง → query MAX → ได้ 5 → สร้าง KAN_NGAN0006
+  - B รอ (ถูก block โดย FOR UPDATE)
+  - A INSERT เสร็จ → COMMIT → ปลด lock
+  - B ถึงคิว → query MAX → ได้ 6 → สร้าง KAN_NGAN0007 ✓
+
+**ป้องกัน Race Condition:**
+```
+Timeline:
+Time 1: User A BEGIN TRANSACTION
+Time 2: User A SELECT ... FOR UPDATE (LOCK)
+Time 3: User B BEGIN TRANSACTION
+Time 4: User B SELECT ... FOR UPDATE (WAITING...)
+Time 5: User A INSERT KAN_NGAN0006
+Time 6: User A COMMIT (UNLOCK)
+Time 7: User B SELECT ได้ค่าใหม่ → 7
+Time 8: User B INSERT KAN_NGAN0007
+Time 9: User B COMMIT
+```
+
+## ไฟล์ที่แก้ไข
+
+1. **forms.php** (บรรทัด 106-122)
+   - เปลี่ยนจาก COUNT(*) เป็น MAX(SUBSTRING(...))
+   - รองรับการลบข้อมูล
+
+2. **forms_save.php** (ทั้งไฟล์)
+   - เพิ่ม transaction (BEGIN, COMMIT, ROLLBACK)
+   - เพิ่ม FOR UPDATE lock
+   - สร้าง kan_no ภายใน transaction แทนการรับจาก POST
+   - เพิ่ม try-catch error handling
+
+3. **delete_request.php** (บรรทัด 57-100)
+   - เพิ่ม transaction สำหรับการลบ
+   - ลบข้อมูลใน items ก่อน แล้วค่อยลบ report_request
+   - ใช้ try-catch error handling
+   - รองรับ rollback เมื่อเกิดข้อผิดพลาด
+
+4. **forms_edit_save.php** (ทั้งไฟล์)
+   - เปลี่ยนจาก query string เป็น prepared statement
+   - เพิ่ม transaction สำหรับ UPDATE, DELETE, INSERT
+   - ลำดับการทำงาน: อัปเดต report_request → ลบ items เก่า → เพิ่ม items ใหม่
+   - ใช้ try-catch error handling
+
+5. **Database: report_request**
+   - เพิ่ม UNIQUE constraint บน kan_no
+
+## การทดสอบ
+
+### ทดสอบ Race Condition
+1. เปิด 2 browser tabs
+2. Login คนละ user
+3. กดสร้างใบกันพร้อมกัน (ภายใน 1 วินาที)
+4. ตรวจสอบว่าได้ kan_no ไม่ซ้ำกัน
+
+### ทดสอบ UNIQUE Constraint
+```sql
+-- ลอง INSERT kan_no ซ้ำ (ควรเกิด error)
+INSERT INTO report_request (user_id, kan_no, ...) VALUES (1, 'KAN_NGAN0001', ...);
+-- Error: Duplicate entry 'KAN_NGAN0001' for key 'unique_kan_no'
+```
+
+### ทดสอบ Transaction Rollback
+- แก้โค้ดให้เกิด error หลัง INSERT
+- ตรวจสอบว่า transaction rollback ไม่มีข้อมูลเข้าตาราง
+
+## ข้อควรระวัง
+
+1. **Server ต้องรองรับ InnoDB**
+   - Transaction ทำงานกับ InnoDB engine เท่านั้น
+   - MyISAM ไม่รองรับ transaction
+
+2. **ตรวจสอบ Table Engine**
+```sql
+SHOW TABLE STATUS WHERE Name = 'report_request';
+```
+
+3. **ถ้าใช้ MyISAM ให้แปลงเป็น InnoDB**
+```sql
+ALTER TABLE report_request ENGINE=InnoDB;
+ALTER TABLE items ENGINE=InnoDB;
+```
+
+## ข้อมูลเพิ่มเติม
+
+- Transaction Isolation: READ COMMITTED (default)
+- Lock timeout: 50 seconds (default)
+- Deadlock detection: enabled
+
+## สรุป
+
+การแก้ไขนี้ป้องกัน race condition ด้วย 3 layers:
+1. **Application Layer**: Transaction + FOR UPDATE lock
+2. **Database Layer**: UNIQUE constraint
+3. **Logic Layer**: ใช้ MAX แทน COUNT
+
+ทำให้มั่นใจได้ว่า kan_no จะไม่ซ้ำกันแม้มี concurrent users
